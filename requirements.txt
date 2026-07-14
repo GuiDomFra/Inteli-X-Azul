@@ -1,0 +1,6 @@
+flask
+slack_bolt
+anthropic
+pyyaml
+python-dotenv
+pytest

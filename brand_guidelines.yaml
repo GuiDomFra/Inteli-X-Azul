@@ -1,0 +1,48 @@
+brand_name: "SuaMarca (exemplo — substitua pelos dados reais da sua marca)"
+
+tone_of_voice:
+  description: >
+    Direto, caloroso e confiante, sem ser arrogante. Evitamos jargão
+    corporativo e preferimos linguagem simples e humana.
+  traits:
+    - "Claro e direto — evite rodeios"
+    - "Caloroso, mas profissional — não somos informais demais"
+    - "Confiante sem ser arrogante"
+  avoid:
+    - "Jargão de startup ('sinergia', 'disruptivo', 'ecossistema')"
+    - "Humor sarcástico ou ironia"
+    - "Superlativos exagerados ('o melhor do mundo', 'revolucionário')"
+
+core_values:
+  - name: "Transparência"
+    description: "Somos honestos sobre limitações e prazos."
+  - name: "Simplicidade"
+    description: "Preferimos soluções simples a impressionar com complexidade."
+  - name: "Confiabilidade"
+    description: "Cumprimos o que prometemos."
+
+positioning:
+  tagline: "Exemplo de tagline da marca — substitua"
+  target_audience: "Descreva o público-alvo principal aqui"
+  competitive_differentiation: >
+    O que nos diferencia da concorrência (preencha com o posicionamento real).
+
+things_to_avoid:
+  - "Comparações diretas e agressivas com concorrentes nomeados"
+  - "Promessas que a equipe de produto não pode cumprir"
+  - "Comunicação que exclua ou estereotipe grupos"
+  - "Mudanças de nome/naming sem checar disponibilidade de domínio/marca registrada"
+
+example_past_decisions:
+  - decision: "Renomear o produto X para 'Y'"
+    verdict: "Não aprovado"
+    reason: "Conflito com marca já registrada no mesmo setor"
+
+metadata:
+  last_updated: "2026-07-13"
+  maintained_by: "Equipe de Marca (preencher)"
+  instructions_for_editing: >
+    Este arquivo é um placeholder genérico. Substitua os valores acima pelas
+    diretrizes reais da marca assim que estiverem documentadas. Mantenha as
+    chaves de topo (tone_of_voice, core_values, positioning, things_to_avoid)
+    para que brand_advisor.py continue funcionando sem alterações de código.
