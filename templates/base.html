@@ -133,6 +133,40 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Variante "com detalhe" — barra de destaque no topo + brilho no
+       canto, pra card não ficar uma caixa branca lisa */
+    .card--accent {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--border));
+    }
+    .card--accent::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 35%, #ffffff 65%));
+    }
+    .card--accent::after {
+      content: "";
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%);
+      pointer-events: none;
+    }
+    .card--accent > * { position: relative; z-index: 1; }
+    .card-watermark {
+      position: absolute;
+      top: 0.6rem;
+      right: 1.1rem;
+      font-size: 3.2rem;
+      opacity: 0.16;
+      line-height: 1;
+      pointer-events: none;
+    }
+
     label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.88rem; color: var(--text); }
     input[type=text], input[type=password], textarea {
       width: 100%;

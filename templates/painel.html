@@ -190,7 +190,8 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card card--accent">
+    <span class="card-watermark" aria-hidden="true">{{ vertical.icone }}</span>
     <h1 style="margin-top:0; font-size:1.15rem;">📝 Nova análise</h1>
     {% if error %}<div class="error">⚠️ {{ error }}</div>{% endif %}
     <form method="post" id="parecer-form">
