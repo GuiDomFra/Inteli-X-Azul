@@ -1,3 +1,4 @@
+import json
 from flask import Flask, request
 
 from config import SECRET_KEY, slack_configured, validate_config
@@ -10,6 +11,17 @@ from web_app import web_app  # noqa: E402
 flask_app = Flask(__name__)
 flask_app.secret_key = SECRET_KEY
 flask_app.register_blueprint(web_app)
+
+@flask_app.template_filter('from_json')
+def from_json_filter(value):
+    """Converte string JSON para objeto Python no template."""
+    if not value:
+        return []
+    try:
+        return json.loads(value)
+    except (json.JSONDecodeError, TypeError):
+        return []
+
 init_db()
 
 if slack_configured():

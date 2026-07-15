@@ -1,11 +1,25 @@
 import json
+import sqlite3
 
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
 from auth import authenticate
 from brand_advisor import BrandAdvisorError, get_brand_parecer, load_brand_guidelines_text
-from db import insert_decision
+from config import DB_PATH
+from db import (
+    get_all_decisions,
+    get_comments,
+    get_decisions_by_vertical,
+    insert_comment,
+    insert_decision,
+)
 from verticals import VERTICALS, get_vertical
+
+
+def get_connection() -> sqlite3.Connection:
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    return sqlite3.connect(DB_PATH)
+
 
 web_app = Blueprint("web_app", __name__)
 
@@ -26,10 +40,21 @@ def _current_vertical() -> dict | None:
     return {"id": vertical_id, **info}
 
 
+def _current_user() -> dict | None:
+    if not session.get("vertical_id") and not session.get("role"):
+        return None
+    return {
+        "vertical_id": session.get("vertical_id"),
+        "role": session.get("role", "vertical"),
+    }
+
+
 @web_app.route("/")
 def index():
     if session.get("vertical_id"):
         return redirect(url_for("web_app.painel"))
+    if session.get("role") == "marketing":
+        return redirect(url_for("web_app.marketing_dashboard"))
     return redirect(url_for("web_app.login"))
 
 
@@ -40,19 +65,21 @@ def login():
 
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
-    vertical_id = authenticate(username, password)
-    if not vertical_id:
+    auth_result = authenticate(username, password)
+    if not auth_result:
         return render_template(
             "login.html", verticals=VERTICALS, error="Usuário ou senha inválidos."
         )
 
-    session["vertical_id"] = vertical_id
-    return redirect(url_for("web_app.painel"))
+    session["vertical_id"] = auth_result["vertical"]
+    session["role"] = auth_result["role"]
+    return redirect(url_for("web_app.index"))
 
 
 @web_app.route("/logout", methods=["POST"])
 def logout():
     session.pop("vertical_id", None)
+    session.pop("role", None)
     return redirect(url_for("web_app.login"))
 
 
@@ -132,4 +159,52 @@ def painel():
         decision_text=decision_text,
         publico_alvo=publico_alvo,
         canal=canal,
+    )
+
+
+@web_app.route("/marketing")
+def marketing_dashboard():
+    """Dashboard da equipe de marketing - vê todas as decisões de todas as verticais."""
+    user = _current_user()
+    if not user or user["role"] != "marketing":
+        return redirect(url_for("web_app.login"))
+
+    all_decisions = get_all_decisions()
+    return render_template(
+        "marketing_dashboard.html",
+        decisions=all_decisions,
+        verticals=VERTICALS,
+    )
+
+
+@web_app.route("/marketing/decision/<int:decision_id>", methods=["GET", "POST"])
+def marketing_decision_detail(decision_id: int):
+    """Detalhe de uma decisão com comentários - marketing pode comentar."""
+    user = _current_user()
+    if not user or user["role"] != "marketing":
+        return redirect(url_for("web_app.login"))
+
+    with get_connection() as conn:
+        conn.row_factory = sqlite3.Row
+        decision = conn.execute("SELECT * FROM decisions WHERE id = ?", (decision_id,)).fetchone()
+        if not decision:
+            return "Decisão não encontrada", 404
+
+    if request.method == "POST":
+        content = request.form.get("comment", "").strip()
+        if content:
+            insert_comment(
+                decision_id=decision_id,
+                author_role="marketing",
+                author_name="Equipe de Marketing",
+                content=content,
+            )
+            return redirect(url_for("web_app.marketing_decision_detail", decision_id=decision_id))
+
+    comments = get_comments(decision_id)
+    return render_template(
+        "marketing_decision_detail.html",
+        decision=decision,
+        comments=comments,
+        verticals=VERTICALS,
     )

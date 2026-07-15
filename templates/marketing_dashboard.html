@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Marketing · Parecer de Marca{% endblock %}
+{% block body %}
+<style>
+  .hero {
+    padding: 1.5rem 1.75rem;
+    background: linear-gradient(120deg, var(--accent), var(--accent-dark));
+    color: #fff;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    margin: -2.5rem -1.25rem 2rem;
+    box-shadow: var(--shadow-soft);
+  }
+  .hero h1 { margin: 0; font-size: 1.5rem; font-weight: 700; }
+  .hero p { margin: 0.4rem 0 0; opacity: 0.9; font-size: 0.95rem; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius-md);
+    padding: 1.25rem 1.5rem;
+    border: 1px solid rgba(16,24,64,0.05);
+    box-shadow: var(--shadow-soft);
+  }
+  .stat-card .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.3rem; }
+  .stat-card .value { font-size: 2rem; font-weight: 700; font-family: "Poppins", sans-serif; color: var(--accent); }
+
+  .table-wrapper { overflow-x: auto; }
+  table.decisions { width: 100%; border-collapse: collapse; }
+  table.decisions th, table.decisions td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+  table.decisions th { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.72rem; color: var(--muted); background: #f8fafc; }
+  table.decisions tr:hover td { background: #f8fafc; }
+  table.decisions .vertical-cell { display: flex; align-items: center; gap: 0.4rem; }
+  table.decisions .vertical-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; background: #f1f5f9; }
+  table.decisions .semaforo { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.7rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: capitalize; }
+  table.decisions .semaforo.verde { background: #dcfce7; color: #166534; }
+  table.decisions .semaforo.amarelo { background: #fef3c7; color: #92400e; }
+  table.decisions .semaforo.vermelho { background: #fee2e2; color: #991b1b; }
+  table.decisions .semaforo:empty::before { content: "—"; color: var(--muted); }
+  .no-data { text-align: center; padding: 3rem; color: var(--muted); }
+  .btn-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+  .btn-link:hover { text-decoration: underline; }
+</style>
+
+<div class="hero">
+  <h1>📊 Dashboard de Marketing</h1>
+  <p>Visão consolidada de todos os pareceres de marca das verticais da Azul</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="label">Total de pareceres</div>
+    <div class="value">{{ decisions|length }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Verdes</div>
+    <div class="value" style="color: #16a34a;">{{ decisions|selectattr('semaforo', 'equalto', 'verde')|list|length }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Amarelos</div>
+    <div class="value" style="color: #d97706;">{{ decisions|selectattr('semaforo', 'equalto', 'amarelo')|list|length }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Vermelhos</div>
+    <div class="value" style="color: #dc2626;">{{ decisions|selectattr('semaforo', 'equalto', 'vermelho')|list|length }}</div>
+  </div>
+</div>
+
+<div class="card table-wrapper">
+  {% if decisions %}
+  <table class="decisions">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Vertical(is)</th>
+        <th>Proposta (resumo)</th>
+        <th>Semáforo</th>
+        <th>Público</th>
+        <th>Canal</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in decisions %}
+      <tr>
+        <td>{{ d.created_at[:10] }} {{ d.created_at[11:16] }}</td>
+        <td class="vertical-cell">
+          {% for v in d.vertical.split(',') if v %}
+            {% if verticals[v] %}
+              <span class="vertical-badge" style="background: color-mix(in srgb, {{ verticals[v].cor }} 12%, white); color: {{ verticals[v].cor }};">
+                {{ verticals[v].icone }} {{ verticals[v].nome }}
+              </span>
+            {% else %}
+              <span class="vertical-badge">{{ v }}</span>
+            {% endif %}
+          {% endfor %}
+        </td>
+        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d.decision_text[:120] }}{% if d.decision_text|length > 120 %}…{% endif %}</td>
+        <td>
+          {% if d.semaforo %}
+            <span class="semaforo {{ d.semaforo }}">{{ d.semaforo }}</span>
+          {% else %}
+            <span class="semaforo">—</span>
+          {% endif %}
+        </td>
+        <td>{{ d.publico_alvo or '—' }}</td>
+        <td>{{ d.canal or '—' }}</td>
+        <td><a href="{{ url_for('web_app.marketing_decision_detail', decision_id=d.id) }}" class="btn-link">Ver & Comentar</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="no-data">
+    <p style="font-size: 1.1rem;">Nenhum parecer registrado ainda.</p>
+    <p style="font-size: 0.9rem;">As verticais enviarão propostas que aparecerão aqui automaticamente.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
