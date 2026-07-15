@@ -187,9 +187,9 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .error {
-      background: #fef2f2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
+      background: color-mix(in srgb, var(--vermelho) 12%, var(--card));
+      color: var(--vermelho);
+      border: 1px solid color-mix(in srgb, var(--vermelho) 30%, var(--card));
       border-radius: 12px;
       padding: 0.85rem 1.05rem;
       margin-bottom: 1.15rem;
@@ -206,6 +206,111 @@
       color: var(--muted);
       font-size: 0.8rem;
       text-align: center;
+    }
+
+    /* ---------- Tema de aviação: componentes reutilizáveis ---------- */
+
+    /* Linha pontilhada tipo "rota de voo" usada como divisor de seção */
+    .flight-divider {
+      position: relative;
+      height: 1px;
+      background: repeating-linear-gradient(90deg, var(--field-border) 0 6px, transparent 6px 12px);
+      margin: 1.4rem 0;
+    }
+    .flight-divider::before {
+      content: "✈️";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translate(-15%, -50%) rotate(90deg);
+      font-size: 0.85rem;
+      background: var(--card);
+      padding: 0 0.3rem;
+    }
+
+    /* Cartão estilo "cartão de embarque" — usado no resultado do parecer */
+    .boarding-pass {
+      position: relative;
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lift);
+      border: 1px solid var(--border);
+      margin-bottom: 1.75rem;
+      overflow: hidden;
+      animation: rise 0.5s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .boarding-pass .stub-row {
+      display: flex;
+      align-items: stretch;
+    }
+    .boarding-pass .stub-main {
+      flex: 1;
+      padding: 1.5rem 1.75rem;
+      min-width: 0;
+    }
+    .boarding-pass .stub-side {
+      width: 92px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-family: "Poppins", sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      color: #fff;
+      position: relative;
+    }
+    .boarding-pass .perforation {
+      position: relative;
+      height: 0;
+      border-top: 2px dashed color-mix(in srgb, var(--muted) 45%, transparent);
+      margin: 0 1.75rem;
+    }
+    .boarding-pass .perforation::before,
+    .boarding-pass .perforation::after {
+      content: "";
+      position: absolute;
+      top: -11px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--bg-2);
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+    @media (prefers-color-scheme: dark) {
+      .boarding-pass .perforation::before,
+      .boarding-pass .perforation::after { background: var(--bg-1); }
+    }
+    .boarding-pass .perforation::before { left: -33px; }
+    .boarding-pass .perforation::after { right: -33px; }
+
+    /* Barra de progresso "rota de voo": avião desliza numa linha pontilhada entre dois aeroportos */
+    .flight-progress { margin-top: 1rem; }
+    .flight-progress .route {
+      position: relative;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--field-border) 0 5px, transparent 5px 10px);
+      margin: 0 0.5rem;
+    }
+    .flight-progress .route .plane-icon {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1rem;
+      transition: left 0.6s cubic-bezier(.2,.8,.2,1);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    }
+    .flight-progress .endpoints {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-top: 0.35rem;
     }
   </style>
 </head>
