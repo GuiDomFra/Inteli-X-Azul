@@ -13,7 +13,7 @@ VERTICALS = {
     },
     "cargo": {
         "nome": "Azul Cargo",
-        "cor": "#E8720C",
+        "cor": "#0056B3",
         "icone": "📦",
     },
     "viagens": {
@@ -23,7 +23,7 @@ VERTICALS = {
     },
     "tudoazul": {
         "nome": "TudoAzul",
-        "cor": "#F2B705",
+        "cor": "#0078D4",
         "icone": "⭐",
     },
 }
