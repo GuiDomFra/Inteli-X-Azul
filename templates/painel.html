@@ -58,6 +58,49 @@
     color: var(--muted);
     margin: 1.1rem 0 0.55rem;
   }
+
+  .vertical-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.4rem 0 1.15rem;
+  }
+  .vertical-check {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    border: 1.5px solid #e2e8f0;
+    background: #fbfcfe;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .vertical-check input { accent-color: var(--accent); }
+  .vertical-check:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .vertical-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+  .vertical-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: #f1f5f9;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+  }
 </style>
 
 <header class="topbar">
@@ -76,6 +119,16 @@
     <form method="post">
       <label for="decision_text">Briefing ou proposta em estágio inicial</label>
       <textarea id="decision_text" name="decision_text" placeholder="Ex.: Vamos lançar uma campanha destacando..." required>{{ decision_text }}</textarea>
+
+      <label>Verticais envolvidas <span class="muted" style="font-weight:400;">(marque mais de uma para propostas conjuntas, ex.: TudoAzul + Azul Viagens)</span></label>
+      <div class="vertical-checks">
+        {% for vertical_id, info in verticals.items() %}
+        <label class="vertical-check">
+          <input type="checkbox" name="verticais" value="{{ vertical_id }}" {% if vertical_id in selected_verticals %}checked{% endif %}>
+          {{ info.icone }} {{ info.nome }}
+        </label>
+        {% endfor %}
+      </div>
 
       <label for="publico_alvo">Público-alvo (opcional)</label>
       <input type="text" id="publico_alvo" name="publico_alvo" value="{{ publico_alvo }}" placeholder="Ex.: viajantes de lazer">
@@ -100,9 +153,19 @@
       <div class="dot">{{ emoji }}</div>
       <div>
         <h2>{{ label }}</h2>
-        <p>Vertical: {{ vertical.nome }}</p>
+        <p>
+          {% for v_id in selected_verticals %}{{ verticals[v_id].nome }}{% if not loop.last %} + {% endif %}{% endfor %}
+        </p>
       </div>
     </div>
+
+    {% if selected_verticals|length > 1 %}
+    <div class="vertical-pills">
+      {% for v_id in selected_verticals %}
+      <span class="vertical-pill">{{ verticals[v_id].icone }} {{ verticals[v_id].nome }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
 
     <div class="section-label">Pontos de risco</div>
     {% if parecer.riscos %}

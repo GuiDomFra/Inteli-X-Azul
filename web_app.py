@@ -67,22 +67,27 @@ def painel():
     decision_text = ""
     publico_alvo = ""
     canal = ""
+    selected_verticals = [vertical["id"]]
 
     if request.method == "POST":
         decision_text = request.form.get("decision_text", "").strip()
         publico_alvo = request.form.get("publico_alvo", "").strip()
         canal = request.form.get("canal", "").strip()
+        selected_verticals = [
+            v for v in request.form.getlist("verticais") if v in VERTICALS
+        ] or [vertical["id"]]
 
         if not decision_text:
             error = "Descreva a proposta antes de pedir o parecer."
         else:
             try:
-                guidelines_text = load_brand_guidelines_text(vertical=vertical["id"])
+                guidelines_text = load_brand_guidelines_text(vertical=selected_verticals)
             except BrandAdvisorError as exc:
                 error = _BRANDBOOK_ERROR_MESSAGES.get(
                     exc.code, "Não foi possível carregar o brandbook da Azul."
                 )
             else:
+                vertical_tag = ",".join(selected_verticals)
                 try:
                     parecer = get_brand_parecer(
                         decision_text,
@@ -97,7 +102,7 @@ def painel():
                         decision_text=decision_text,
                         publico_alvo=publico_alvo or None,
                         canal=canal or None,
-                        vertical=vertical["id"],
+                        vertical=vertical_tag,
                         error=str(exc),
                     )
                 else:
@@ -106,7 +111,7 @@ def painel():
                         decision_text=decision_text,
                         publico_alvo=publico_alvo or None,
                         canal=canal or None,
-                        vertical=vertical["id"],
+                        vertical=vertical_tag,
                         model_id=parecer.get("_model_id"),
                         semaforo=parecer["semaforo"],
                         riscos_json=json.dumps(parecer["riscos"], ensure_ascii=False),
@@ -120,6 +125,8 @@ def painel():
     return render_template(
         "painel.html",
         vertical=vertical,
+        verticals=VERTICALS,
+        selected_verticals=selected_verticals,
         parecer=parecer,
         error=error,
         decision_text=decision_text,

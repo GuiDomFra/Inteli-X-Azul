@@ -121,13 +121,13 @@ def test_load_brand_guidelines_text_configured(tmp_path):
 def test_load_brand_guidelines_text_without_vertical_has_no_vertical_specific_rule():
     text = load_brand_guidelines_text()
     assert "prazo_entrega_absoluto" not in text
-    assert "vertical_ativa" not in text
+    assert "verticais_ativas" not in text
 
 
 def test_load_brand_guidelines_text_with_vertical_merges_additional_rules():
     text = load_brand_guidelines_text(vertical="cargo")
     assert "prazo_entrega_absoluto" in text
-    assert "vertical_ativa" in text
+    assert "verticais_ativas" in text
     assert "Azul Cargo" in text
     # diretrizes do núcleo continuam presentes junto das da vertical
     assert "tom_low_cost" in text
@@ -135,4 +135,16 @@ def test_load_brand_guidelines_text_with_vertical_merges_additional_rules():
 
 def test_load_brand_guidelines_text_unknown_vertical_falls_back_to_core():
     text = load_brand_guidelines_text(vertical="vertical_que_nao_existe")
-    assert "vertical_ativa" not in text
+    assert "verticais_ativas" not in text
+
+
+def test_load_brand_guidelines_text_with_multiple_verticals_merges_all():
+    text = load_brand_guidelines_text(vertical=["cargo", "viagens"])
+    # diretriz adicional de cada vertical selecionada presente
+    assert "prazo_entrega_absoluto" in text
+    assert "preco_pacote_final" in text
+    # diretriz de uma vertical NÃO selecionada não deve aparecer
+    assert "valor_ponto_implicito" not in text
+    assert "Azul Cargo" in text
+    assert "Azul Viagens" in text
+    assert "tom_low_cost" in text

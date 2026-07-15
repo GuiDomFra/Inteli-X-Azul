@@ -113,11 +113,16 @@ Regras invioláveis:
     em um e-mail para o programa TudoAzul e um risco maior em mídia paga em
     redes sociais).
 
-11. Se as diretrizes abaixo tiverem uma chave "vertical_ativa", ela indica
-    qual vertical da Azul está sendo avaliada (ex.: Azul Cargo, Azul
-    Viagens, TudoAzul, Azul Linhas Aéreas) — use o campo "foco" dela para
-    contextualizar a análise, mas as diretrizes_proibidas já vêm combinadas
-    (núcleo + vertical) e devem ser usadas exatamente como estão.
+11. Se as diretrizes abaixo tiverem uma chave "verticais_ativas", ela lista
+    qual(is) vertical(is) da Azul estão sendo avaliadas nesta proposta (ex.:
+    Azul Cargo, Azul Viagens, TudoAzul, Azul Linhas Aéreas) — use o campo
+    "foco" de cada uma para contextualizar a análise. As diretrizes_proibidas
+    já vêm combinadas (núcleo + todas as verticais ativas) e devem ser usadas
+    exatamente como estão. Se houver mais de uma vertical ativa (proposta
+    conjunta entre verticais, ex. promoção TudoAzul + pacote Azul Viagens),
+    considere as diretrizes de todas elas ao apontar riscos e garanta que
+    cada sugestão funcione para todas as verticais envolvidas, não só para
+    uma.
 
 Diretrizes de marca (fonte de verdade):
 <brand_guidelines>
@@ -132,7 +137,9 @@ class BrandAdvisorError(Exception):
         self.code = code
 
 
-def load_brand_guidelines_text(path=BRAND_GUIDELINES_PATH, vertical: str | None = None) -> str:
+def load_brand_guidelines_text(
+    path=BRAND_GUIDELINES_PATH, vertical: str | list[str] | None = None
+) -> str:
     try:
         with open(path, "r", encoding="utf-8") as f:
             raw = f.read()
@@ -159,32 +166,46 @@ def load_brand_guidelines_text(path=BRAND_GUIDELINES_PATH, vertical: str | None 
     return yaml.dump(guidelines, allow_unicode=True, sort_keys=False)
 
 
-def _apply_vertical(guidelines: dict, vertical: str | None) -> dict:
-    """Combina o núcleo do brandbook com as diretrizes adicionais da vertical
-    ativa (linhas_aereas/cargo/viagens/tudoazul), se houver uma selecionada.
+def _apply_vertical(guidelines: dict, vertical: str | list[str] | None) -> dict:
+    """Combina o núcleo do brandbook com as diretrizes adicionais de uma ou
+    mais verticais ativas (linhas_aereas/cargo/viagens/tudoazul) — útil para
+    analisar de uma vez uma proposta que atravessa várias verticais (ex.:
+    promoção conjunta TudoAzul + Azul Viagens), citando as diretrizes
+    combinadas de todas as verticais envolvidas em um único parecer.
 
     Em qualquer caso, a chave "verticais" (metadados de todas as verticais)
     é removida do texto final — o modelo só deve ver as diretrizes que
-    realmente se aplicam à análise em questão, nunca as das outras
-    verticais, para não confundir a citação de fonte."""
-    verticais = guidelines.get("verticais") or {}
-    if not vertical or vertical not in verticais:
-        guidelines = dict(guidelines)
-        guidelines.pop("verticais", None)
+    realmente se aplicam à análise em questão, nunca as das verticais não
+    selecionadas, para não confundir a citação de fonte."""
+    all_verticais = guidelines.get("verticais") or {}
+
+    requested = [vertical] if isinstance(vertical, str) else list(vertical or [])
+    selected_ids = [v for v in requested if v in all_verticais]
+
+    guidelines = dict(guidelines)
+    guidelines.pop("verticais", None)
+
+    if not selected_ids:
         return guidelines
 
-    vertical_info = verticais[vertical]
-    merged = dict(guidelines)
-    merged["vertical_ativa"] = {
-        "id": vertical,
-        "nome": vertical_info.get("nome", vertical),
-        "foco": vertical_info.get("foco", ""),
-    }
-    merged["diretrizes_proibidas"] = list(guidelines.get("diretrizes_proibidas", [])) + list(
-        vertical_info.get("diretrizes_adicionais", [])
+    extra_diretrizes = []
+    verticais_ativas = []
+    for vertical_id in selected_ids:
+        vertical_info = all_verticais[vertical_id]
+        verticais_ativas.append(
+            {
+                "id": vertical_id,
+                "nome": vertical_info.get("nome", vertical_id),
+                "foco": vertical_info.get("foco", ""),
+            }
+        )
+        extra_diretrizes.extend(vertical_info.get("diretrizes_adicionais", []))
+
+    guidelines["verticais_ativas"] = verticais_ativas
+    guidelines["diretrizes_proibidas"] = (
+        list(guidelines.get("diretrizes_proibidas", [])) + extra_diretrizes
     )
-    merged.pop("verticais", None)
-    return merged
+    return guidelines
 
 
 def compute_report_word_count(parecer: dict) -> int:
