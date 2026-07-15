@@ -8,10 +8,11 @@ interfaces, um só "cérebro" (`brand_advisor.py`):
 
 - **Slack** (`/parecer-marca`) — uso rápido em qualquer canal, sem login,
   não associado a uma vertical específica.
-- **Web** (login + painel) — cada vertical da Azul (Linhas Aéreas, Cargo,
-  Viagens, TudoAzul) tem seu próprio usuário de demonstração e vê, além do
-  brandbook núcleo da Azul, as diretrizes adicionais específicas da sua
-  vertical.
+- **Web** (login + painel) — cada vertical da Azul (Linhas Aéreas, Conecta,
+  Cargo Express, Viagens, TudoAzul, Sustentabilidade) tem seu próprio usuário
+  de demonstração e vê, além do brandbook núcleo da Azul, as diretrizes
+  adicionais específicas da sua vertical — inclusive dá pra marcar mais de
+  uma vertical numa mesma análise, para propostas conjuntas.
 
 Em ambos os casos o agente avalia o briefing à luz do brandbook
 (`brand_guidelines.yaml`) usando Claude e devolve um relatório estruturado
@@ -90,12 +91,14 @@ Slack para essa parte.
 Cada vertical da Azul tem um usuário de demonstração fixo (a senha é sempre
 `azul123`, mostrada na própria tela de login):
 
-| Usuário         | Vertical            |
-|-----------------|----------------------|
-| `linhas_aereas` | Azul Linhas Aéreas   |
-| `cargo`         | Azul Cargo           |
-| `viagens`       | Azul Viagens         |
-| `tudoazul`      | TudoAzul             |
+| Usuário            | Vertical              |
+|--------------------|------------------------|
+| `linhas_aereas`    | Azul Linhas Aéreas     |
+| `conecta`          | Azul Conecta           |
+| `cargo`            | Azul Cargo Express     |
+| `viagens`          | Azul Viagens           |
+| `tudoazul`         | TudoAzul               |
+| `sustentabilidade` | Azul Sustentabilidade  |
 
 Depois do login, o painel (`/painel`) mostra um formulário (briefing +
 público-alvo/canal opcionais) e o parecer de marca gerado — usando o

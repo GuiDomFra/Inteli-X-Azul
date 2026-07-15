@@ -11,8 +11,13 @@ VERTICALS = {
         "cor": "#003DA6",
         "icone": "✈️",
     },
+    "conecta": {
+        "nome": "Azul Conecta",
+        "cor": "#4A90D9",
+        "icone": "🛩️",
+    },
     "cargo": {
-        "nome": "Azul Cargo",
+        "nome": "Azul Cargo Express",
         "cor": "#0056B3",
         "icone": "📦",
     },
@@ -25,6 +30,11 @@ VERTICALS = {
         "nome": "TudoAzul",
         "cor": "#0078D4",
         "icone": "⭐",
+    },
+    "sustentabilidade": {
+        "nome": "Azul Sustentabilidade",
+        "cor": "#2D9C6F",
+        "icone": "🌱",
     },
 }
 

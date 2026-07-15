@@ -65,7 +65,10 @@ diretrizes_proibidas:
 verticais:
   linhas_aereas:
     nome: "Azul Linhas Aéreas"
-    foco: "Campanhas de destino, malha aérea, experiência de voo."
+    foco: >
+      A companhia aérea principal e a maior do Brasil em número de cidades
+      atendidas. Conecta o país a destinos na América do Sul, Estados Unidos
+      e Europa. Campanhas de destino, malha aérea, experiência de voo.
     diretrizes_adicionais:
       - id: "seguranca_operacional"
         titulo: "Não usar segurança de voo como gancho de marketing"
@@ -73,19 +76,40 @@ verticais:
           Não transformar segurança operacional em apelo publicitário
           ("o voo mais seguro", "nunca tivemos um incidente") — é um dado
           sensível, não um argumento de venda.
+  conecta:
+    nome: "Azul Conecta"
+    foco: >
+      Companhia aérea subsidiária focada em aviação sub-regional. Opera com
+      aeronaves menores (modelo Cessna Grand Caravan) para conectar cidades
+      de pequeno porte a grandes centros de conexão.
+    diretrizes_adicionais:
+      - id: "capacidade_aeronave_pequena"
+        titulo: "Não prometer capacidade/frequência incompatível com aeronave menor"
+        descricao: >
+          As aeronaves da Azul Conecta (Cessna Grand Caravan) têm capacidade
+          bem menor que as da Azul Linhas Aéreas — não prometer volume de
+          passageiros, bagagem ou frequência de voos equivalente aos voos
+          principais, nem tratar a aeronave menor como limitação a ser
+          escondida (é o que viabiliza chegar a cidades pequenas).
   cargo:
-    nome: "Azul Cargo"
-    foco: "Transporte de cargas e encomendas — público é majoritariamente B2B/lojista."
+    nome: "Azul Cargo Express"
+    foco: >
+      Vertical dedicada à logística e transporte de cargas. Realiza entregas
+      expressas de porta a porta utilizando a capacidade de porão dos voos
+      da Azul e também frota dedicada. Público majoritariamente B2B/lojista.
     diretrizes_adicionais:
       - id: "prazo_entrega_absoluto"
         titulo: "Não garantir prazo de entrega de forma incondicional"
         descricao: >
-          Prazos de entrega da Azul Cargo dependem de malha e terceiros
-          (transportadoras parceiras na ponta) — comunicar como "prazo
-          estimado", nunca como garantia contratual.
+          Prazos de entrega da Azul Cargo Express dependem de malha e
+          terceiros (transportadoras parceiras na ponta) — comunicar como
+          "prazo estimado", nunca como garantia contratual.
   viagens:
     nome: "Azul Viagens"
-    foco: "Pacotes e parcerias de turismo (hospedagem, passeios, roteiros)."
+    foco: >
+      Operadora de turismo da companhia. Oferece pacotes de viagens,
+      reservas de hotéis e ingressos, com dezenas de lojas físicas
+      espalhadas pelo Brasil.
     diretrizes_adicionais:
       - id: "preco_pacote_final"
         titulo: "Sempre deixar claro que o preço de pacote pode variar"
@@ -95,7 +119,10 @@ verticais:
           ou garantido sem a ressalva "sujeito à disponibilidade".
   tudoazul:
     nome: "TudoAzul"
-    foco: "Programa de fidelidade — acúmulo e resgate de pontos."
+    foco: >
+      O programa de fidelidade da companhia, onde os clientes acumulam
+      pontos ao voar ou consumir em parceiros para trocar por passagens e
+      produtos.
     diretrizes_adicionais:
       - id: "valor_ponto_implicito"
         titulo: "Não prometer valor fixo de resgate para os pontos"
@@ -103,6 +130,25 @@ verticais:
           O valor de resgate de pontos TudoAzul varia por promoção e
           disponibilidade — não comunicar "seus pontos valem R$X" como se
           fosse uma taxa de conversão garantida e permanente.
+  sustentabilidade:
+    nome: "Azul Sustentabilidade"
+    foco: >
+      Unidade de negócio especializada em créditos de carbono, auxiliando
+      outras empresas do setor a compensar suas emissões.
+    diretrizes_adicionais:
+      - id: "greenwashing"
+        titulo: "Não fazer alegação de impacto ambiental sem lastro verificável"
+        descricao: >
+          Não comunicar números de compensação de carbono, neutralidade ou
+          impacto ambiental sem base auditável/certificada — evitar qualquer
+          linguagem que soe a greenwashing.
+      - id: "neutralidade_absoluta"
+        titulo: "Não prometer neutralidade de carbono de forma incondicional"
+        descricao: >
+          Compensação de carbono depende de programas e certificadoras
+          externas — comunicar como compromisso/meta com base em programas
+          específicos, nunca como uma garantia absoluta e permanente
+          ("carbono zero para sempre").
 
 exemplos_de_aplicacao:
   - decisao: "Campanha anunciando 'a passagem mais barata do Brasil'"
