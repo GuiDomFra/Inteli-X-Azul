@@ -1,38 +1,127 @@
 {% extends "base.html" %}
 {% block title %}Login · Parecer de Marca Azul{% endblock %}
 {% block body %}
-<header class="topbar">
-  <div class="brand">✈️ Parecer de Marca · Azul</div>
-</header>
-<main>
+<style>
+  .hero {
+    max-width: 760px;
+    margin: 3rem auto 0;
+    padding: 0 1.25rem;
+    text-align: center;
+  }
+  .hero .plane {
+    font-size: 2.6rem;
+    display: inline-block;
+    filter: drop-shadow(0 8px 18px rgba(0,61,166,0.25));
+    animation: float 3.2s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-8px) rotate(3deg); }
+  }
+  .hero h1 {
+    font-size: 1.9rem;
+    margin: 0.9rem 0 0.35rem;
+    background: linear-gradient(120deg, var(--azul-blue), #6a3dd1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p { color: var(--muted); margin: 0 auto; max-width: 480px; }
+
+  .login-card { max-width: 420px; margin: 2rem auto 0; }
+
+  .verticals-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.7rem;
+    margin-top: 0.75rem;
+  }
+  .vertical-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    background: #fbfcfe;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .vertical-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -10px rgba(16,24,64,0.25);
+  }
+  .vertical-chip .icon {
+    width: 2.1rem; height: 2.1rem;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+  }
+  .vertical-chip .label { line-height: 1.15; }
+  .vertical-chip .label strong { display: block; font-size: 0.85rem; }
+  .vertical-chip .label span { font-size: 0.72rem; color: var(--muted); }
+  .vertical-chip.active { border-color: var(--azul-blue); box-shadow: 0 0 0 3px rgba(0,61,166,0.12); }
+
+  .demo-note {
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  .demo-note code {
+    background: #f1f5f9;
+    padding: 0.12rem 0.4rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+  }
+</style>
+
+<div class="hero">
+  <span class="plane">✈️</span>
+  <h1>Parecer de Marca · Azul</h1>
+  <p>Visão de marca antes de qualquer campanha ir para a mesa de aprovação — escolha sua vertical para começar.</p>
+</div>
+
+<main class="login-card">
   <div class="card">
-    <h1 style="margin-top:0;">Entrar</h1>
-    <p class="muted">Cada vertical da Azul tem seu próprio login e brandbook.</p>
+    {% if error %}<div class="error">⚠️ {{ error }}</div>{% endif %}
 
-    {% if error %}<div class="error">{{ error }}</div>{% endif %}
-
-    <form method="post">
+    <form method="post" id="login-form">
       <label for="username">Usuário</label>
       <input type="text" id="username" name="username" autocomplete="username" required>
 
       <label for="password">Senha</label>
       <input type="password" id="password" name="password" autocomplete="current-password" required>
 
-      <button type="submit" class="primary">Entrar</button>
+      <button type="submit" class="primary" style="width:100%;">Entrar</button>
     </form>
-  </div>
 
-  <div class="card">
-    <h2 style="margin-top:0; font-size:1rem;">Contas de demonstração</h2>
-    <p class="muted">Senha para todas: <code>azul123</code></p>
-    <ul class="muted">
+    <div class="demo-note">Contas de demonstração — clique numa vertical para preencher o usuário. Senha: <code>azul123</code></div>
+
+    <div class="verticals-grid">
       {% for vertical_id, info in verticals.items() %}
-      <li>{{ info.icone }} <strong>{{ info.nome }}</strong> — usuário: <code>{{ vertical_id }}</code></li>
+      <button type="button" class="vertical-chip" data-username="{{ vertical_id }}" onclick="fillLogin('{{ vertical_id }}', this)">
+        <span class="icon" style="background: color-mix(in srgb, {{ info.cor }} 16%, white); color: {{ info.cor }};">{{ info.icone }}</span>
+        <span class="label"><strong>{{ info.nome }}</strong><span>{{ vertical_id }}</span></span>
+      </button>
       {% endfor %}
-    </ul>
+    </div>
   </div>
 </main>
 <footer class="disclaimer">
   Protótipo acadêmico — login de demonstração, não usar credenciais reais.
 </footer>
+
+<script>
+  function fillLogin(username, el) {
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = 'azul123';
+    document.querySelectorAll('.vertical-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('password').focus();
+  }
+</script>
 {% endblock %}

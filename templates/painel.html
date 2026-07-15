@@ -1,63 +1,129 @@
 {% extends "base.html" %}
 {% block title %}{{ vertical.nome }} · Parecer de Marca{% endblock %}
 {% block body %}
+<style>
+  .risk-item, .suggestion-item {
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    background: #f8fafc;
+    border-left: 4px solid var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .risk-item strong { color: var(--accent-dark); }
+  .suggestion-item { border-left-color: var(--verde); }
+  .suggestion-item::before { content: "💡 "; }
+
+  .semaforo-hero {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.1rem 1.3rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.4rem;
+    color: #fff;
+  }
+  .semaforo-hero.verde { background: linear-gradient(120deg, #16a34a, #15803d); }
+  .semaforo-hero.amarelo { background: linear-gradient(120deg, #d97706, #b45309); }
+  .semaforo-hero.vermelho { background: linear-gradient(120deg, #dc2626, #991b1b); }
+  .semaforo-hero .dot {
+    width: 3.1rem; height: 3.1rem;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.35); }
+    50% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+  }
+  .semaforo-hero h2 { margin: 0; font-size: 1.15rem; color: #fff; }
+  .semaforo-hero p { margin: 0.15rem 0 0; opacity: 0.9; font-size: 0.85rem; }
+
+  .word-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+    margin-top: 0.9rem;
+  }
+  .word-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.4s ease; }
+
+  .section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 1.1rem 0 0.55rem;
+  }
+</style>
+
 <header class="topbar">
-  <div class="brand">{{ vertical.icone }} {{ vertical.nome }} · Parecer de Marca</div>
+  <div class="brand">
+    <span class="badge-icon">{{ vertical.icone }}</span>
+    {{ vertical.nome }} · Parecer de Marca
+  </div>
   <form method="post" action="{{ url_for('web_app.logout') }}">
-    <button type="submit">Sair</button>
+    <button type="submit" class="logout">Sair</button>
   </form>
 </header>
 <main>
   <div class="card">
-    <h1 style="margin-top:0; font-size:1.2rem;">Nova análise</h1>
-    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <h1 style="margin-top:0; font-size:1.15rem;">📝 Nova análise</h1>
+    {% if error %}<div class="error">⚠️ {{ error }}</div>{% endif %}
     <form method="post">
       <label for="decision_text">Briefing ou proposta em estágio inicial</label>
-      <textarea id="decision_text" name="decision_text" required>{{ decision_text }}</textarea>
+      <textarea id="decision_text" name="decision_text" placeholder="Ex.: Vamos lançar uma campanha destacando..." required>{{ decision_text }}</textarea>
 
       <label for="publico_alvo">Público-alvo (opcional)</label>
-      <input type="text" id="publico_alvo" name="publico_alvo" value="{{ publico_alvo }}">
+      <input type="text" id="publico_alvo" name="publico_alvo" value="{{ publico_alvo }}" placeholder="Ex.: viajantes de lazer">
 
       <label for="canal">Canal (opcional)</label>
-      <input type="text" id="canal" name="canal" value="{{ canal }}">
+      <input type="text" id="canal" name="canal" value="{{ canal }}" placeholder="Ex.: redes sociais, e-mail, TV">
 
-      <button type="submit" class="primary">Gerar parecer</button>
+      <button type="submit" class="primary">✨ Gerar parecer</button>
     </form>
   </div>
 
   {% if parecer %}
   <div class="card">
     {% set semaforo_info = {
-      'verde': ('🟢', 'Alinhado'),
-      'amarelo': ('🟡', 'Atenção'),
-      'vermelho': ('🔴', 'Conflito'),
+      'verde': ('🟢', 'Alinhado com a marca'),
+      'amarelo': ('🟡', 'Atenção necessária'),
+      'vermelho': ('🔴', 'Conflito com o brandbook'),
     } %}
     {% set emoji, label = semaforo_info.get(parecer.semaforo, ('', parecer.semaforo)) %}
-    <h2 style="margin-top:0;">{{ emoji }} Semáforo: {{ label }}</h2>
 
-    <h3>Pontos de risco</h3>
+    <div class="semaforo-hero {{ parecer.semaforo }}">
+      <div class="dot">{{ emoji }}</div>
+      <div>
+        <h2>{{ label }}</h2>
+        <p>Vertical: {{ vertical.nome }}</p>
+      </div>
+    </div>
+
+    <div class="section-label">Pontos de risco</div>
     {% if parecer.riscos %}
-    <ul>
       {% for r in parecer.riscos %}
-      <li><strong>{{ r.diretriz }}</strong>: {{ r.risco }}</li>
+      <div class="risk-item"><strong>{{ r.diretriz }}</strong> — {{ r.risco }}</div>
       {% endfor %}
-    </ul>
     {% else %}
-    <p class="muted">Nenhum risco de marca identificado.</p>
+      <p class="muted">Nenhum risco de marca identificado.</p>
     {% endif %}
 
-    <h3>Sugestões de ajuste</h3>
+    <div class="section-label">Sugestões de ajuste</div>
     {% if parecer.sugestoes %}
-    <ul>
       {% for s in parecer.sugestoes %}
-      <li>{{ s }}</li>
+      <div class="suggestion-item">{{ s }}</div>
       {% endfor %}
-    </ul>
     {% else %}
-    <p class="muted">—</p>
+      <p class="muted">—</p>
     {% endif %}
 
-    <p class="muted">{{ parecer._word_count }} / 300 palavras · modelo {{ parecer._model_id }}</p>
+    <div class="word-bar"><div class="word-bar-fill" style="width: {{ (parecer._word_count / 300 * 100) | round(0, 'floor') }}%;"></div></div>
+    <p class="muted" style="margin-top:0.4rem;">{{ parecer._word_count }} / 300 palavras · modelo {{ parecer._model_id }}</p>
   </div>
   {% endif %}
 </main>
