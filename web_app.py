@@ -12,6 +12,7 @@ from db import (
     get_decisions_by_vertical,
     insert_comment,
     insert_decision,
+    mark_reviewed,
 )
 from importance import DEFAULT_IMPORTANCE, IMPORTANCE_LEVELS, sort_weight
 from verticals import VERTICALS, get_vertical
@@ -171,6 +172,35 @@ def painel():
     )
 
 
+@web_app.route("/painel/historico")
+def painel_historico():
+    """Dashboard da própria vertical: histórico de propostas enviadas ao
+    marketing, com status de revisão — deixa claro pra vertical que o
+    fluxo é sempre "enviar para o marketing avaliar"."""
+    vertical = _current_vertical()
+    if not vertical:
+        return redirect(url_for("web_app.login"))
+
+    decisions = get_decisions_by_vertical(vertical["id"])
+    total = len(decisions)
+    reviewed_count = sum(1 for d in decisions if d["reviewed"])
+    semaforo_counts = {
+        "verde": sum(1 for d in decisions if d["semaforo"] == "verde"),
+        "amarelo": sum(1 for d in decisions if d["semaforo"] == "amarelo"),
+        "vermelho": sum(1 for d in decisions if d["semaforo"] == "vermelho"),
+    }
+    return render_template(
+        "painel_historico.html",
+        vertical=vertical,
+        verticals=VERTICALS,
+        decisions=decisions,
+        total=total,
+        reviewed_count=reviewed_count,
+        semaforo_counts=semaforo_counts,
+        importance_levels=IMPORTANCE_LEVELS,
+    )
+
+
 @web_app.route("/marketing")
 def marketing_dashboard():
     """Dashboard da equipe de marketing - vê todas as decisões de todas as verticais."""
@@ -222,3 +252,14 @@ def marketing_decision_detail(decision_id: int):
         verticals=VERTICALS,
         importance_levels=IMPORTANCE_LEVELS,
     )
+
+
+@web_app.route("/marketing/decision/<int:decision_id>/revisar", methods=["POST"])
+def marketing_mark_reviewed(decision_id: int):
+    """Marca uma decisão como revisada pelo marketing sem precisar comentar."""
+    user = _current_user()
+    if not user or user["role"] != "marketing":
+        return redirect(url_for("web_app.login"))
+
+    mark_reviewed(decision_id)
+    return redirect(url_for("web_app.marketing_decision_detail", decision_id=decision_id))

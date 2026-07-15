@@ -38,6 +38,13 @@
   }
   .stat-card .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.3rem; }
   .stat-card .value { font-size: 2rem; font-weight: 700; font-family: "Poppins", sans-serif; color: var(--accent); }
+  .stat-card.featured {
+    background: linear-gradient(150deg, var(--accent), var(--accent-dark));
+    box-shadow: var(--shadow-soft);
+  }
+  .stat-card.featured .label { color: rgba(255,255,255,0.85); }
+  .stat-card.featured .value { color: #fff; }
+  .stat-card.featured::before { display: none; }
 
   .filters-card {
     display: flex;
@@ -108,6 +115,9 @@
   table.decisions .semaforo.vermelho { background: color-mix(in srgb, var(--vermelho) 18%, var(--card)); color: var(--vermelho); }
   table.decisions .semaforo:empty::before { content: "—"; color: var(--muted); }
   table.decisions .importancia { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: var(--chip-bg); color: var(--text); }
+  table.decisions .status-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+  table.decisions .status-badge.reviewed { background: color-mix(in srgb, var(--verde) 18%, var(--card)); color: var(--verde); }
+  table.decisions .status-badge.pending { background: color-mix(in srgb, var(--amarelo) 18%, var(--card)); color: var(--amarelo); }
   .no-data { text-align: center; padding: 3rem; color: var(--muted); }
   .btn-link { color: var(--accent-dark); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
   .btn-link:hover { text-decoration: underline; }
@@ -117,7 +127,7 @@
   <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
     <div>
       <h1 style="margin: 0; font-size: 1.5rem; font-weight: 700;">📊 Dashboard de Marketing</h1>
-      <p style="margin: 0.4rem 0 0; opacity: 0.9; font-size: 0.95rem;">Visão consolidada, filtrável, de todos os pareceres de marca das 6 verticais da Azul</p>
+      <p style="margin: 0.4rem 0 0; opacity: 0.9; font-size: 0.95rem;">O ponto de encontro entre as 6 verticais da Azul e o marketing — tudo o que elas enviam cai aqui, pra revisar e comentar.</p>
     </div>
     <form method="post" action="{{ url_for('web_app.logout') }}">
       <button type="submit" class="logout">Sair</button>
@@ -126,17 +136,17 @@
 </div>
 
 <div class="stats-grid">
-  <div class="stat-card">
+  <div class="stat-card featured">
     <div class="label">Total de pareceres</div>
     <div class="value">{{ decisions|length }}</div>
   </div>
   <div class="stat-card">
-    <div class="label">Verdes</div>
-    <div class="value" style="color: var(--verde);">{{ decisions|selectattr('semaforo', 'equalto', 'verde')|list|length }}</div>
+    <div class="label">Aguardando revisão</div>
+    <div class="value" style="color: var(--amarelo);">{{ decisions|rejectattr('reviewed')|list|length }}</div>
   </div>
   <div class="stat-card">
-    <div class="label">Amarelos</div>
-    <div class="value" style="color: var(--amarelo);">{{ decisions|selectattr('semaforo', 'equalto', 'amarelo')|list|length }}</div>
+    <div class="label">Revisados</div>
+    <div class="value" style="color: var(--verde);">{{ decisions|selectattr('reviewed')|list|length }}</div>
   </div>
   <div class="stat-card">
     <div class="label">Vermelhos</div>
@@ -168,6 +178,14 @@
     </div>
   </div>
   <div class="filter-group">
+    <span class="filter-label">Status</span>
+    <div class="semaforo-filters" id="status-filters">
+      <button type="button" class="semaforo-filter-btn active" data-status="all">Todos</button>
+      <button type="button" class="semaforo-filter-btn" data-status="pending">⏳ Aguardando</button>
+      <button type="button" class="semaforo-filter-btn" data-status="reviewed">✔ Revisados</button>
+    </div>
+  </div>
+  <div class="filter-group">
     <span class="filter-label">Verticais</span>
     <div class="vertical-filters" id="vertical-filters">
       {% for vertical_id, info in verticals.items() %}
@@ -190,6 +208,7 @@
         <th>Proposta (resumo)</th>
         <th>Semáforo</th>
         <th>Importância</th>
+        <th>Status</th>
         <th>Público</th>
         <th>Canal</th>
         <th>Ação</th>
@@ -197,7 +216,7 @@
     </thead>
     <tbody>
       {% for d in decisions %}
-      <tr data-semaforo="{{ d.semaforo or '' }}" data-importancia="{{ d.importancia or '' }}" data-verticals="{{ d.vertical }}" data-search="{{ d.decision_text|lower }}">
+      <tr data-semaforo="{{ d.semaforo or '' }}" data-importancia="{{ d.importancia or '' }}" data-status="{{ 'reviewed' if d.reviewed else 'pending' }}" data-verticals="{{ d.vertical }}" data-search="{{ d.decision_text|lower }}">
         <td>{{ d.created_at[:10] }} {{ d.created_at[11:16] }}</td>
         <td class="vertical-cell">
           {% for v in d.vertical.split(',') if v %}
@@ -223,6 +242,13 @@
             <span class="importancia">{{ importance_levels[d.importancia].icone }} {{ importance_levels[d.importancia].label }}</span>
           {% else %}
             <span class="muted">—</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if d.reviewed %}
+            <span class="status-badge reviewed">✔ Revisado</span>
+          {% else %}
+            <span class="status-badge pending">⏳ Aguardando</span>
           {% endif %}
         </td>
         <td>{{ d.publico_alvo or '—' }}</td>
@@ -252,22 +278,24 @@
   var searchInput = document.getElementById('search-input');
   var semaforoBtns = Array.prototype.slice.call(document.querySelectorAll('#semaforo-filters .semaforo-filter-btn'));
   var importanciaBtns = Array.prototype.slice.call(document.querySelectorAll('#importancia-filters .semaforo-filter-btn'));
+  var statusBtns = Array.prototype.slice.call(document.querySelectorAll('#status-filters .semaforo-filter-btn'));
   var verticalChips = Array.prototype.slice.call(document.querySelectorAll('.vertical-filter-chip'));
   var resultsCount = document.getElementById('results-count');
   var noResults = document.getElementById('no-results');
   var clearBtn = document.getElementById('clear-filters');
 
-  var state = { semaforo: 'all', importancia: 'all', verticals: new Set(), search: '' };
+  var state = { semaforo: 'all', importancia: 'all', status: 'all', verticals: new Set(), search: '' };
 
   function applyFilters() {
     var visible = 0;
     rows.forEach(function (row) {
       var matchesSemaforo = state.semaforo === 'all' || row.dataset.semaforo === state.semaforo;
       var matchesImportancia = state.importancia === 'all' || row.dataset.importancia === state.importancia;
+      var matchesStatus = state.status === 'all' || row.dataset.status === state.status;
       var rowVerticals = row.dataset.verticals.split(',').filter(Boolean);
       var matchesVertical = state.verticals.size === 0 || rowVerticals.some(function (v) { return state.verticals.has(v); });
       var matchesSearch = !state.search || row.dataset.search.indexOf(state.search) !== -1;
-      var show = matchesSemaforo && matchesImportancia && matchesVertical && matchesSearch;
+      var show = matchesSemaforo && matchesImportancia && matchesStatus && matchesVertical && matchesSearch;
       row.style.display = show ? '' : 'none';
       if (show) visible++;
     });
@@ -313,14 +341,25 @@
     });
   });
 
+  statusBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      statusBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state.status = btn.dataset.status;
+      applyFilters();
+    });
+  });
+
   clearBtn.addEventListener('click', function () {
     state.semaforo = 'all';
     state.importancia = 'all';
+    state.status = 'all';
     state.verticals.clear();
     state.search = '';
     searchInput.value = '';
     semaforoBtns.forEach(function (b) { b.classList.toggle('active', b.dataset.semaforo === 'all'); });
     importanciaBtns.forEach(function (b) { b.classList.toggle('active', b.dataset.importancia === 'all'); });
+    statusBtns.forEach(function (b) { b.classList.toggle('active', b.dataset.status === 'all'); });
     verticalChips.forEach(function (c) { c.classList.remove('active'); });
     applyFilters();
   });

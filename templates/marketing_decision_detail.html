@@ -25,6 +25,9 @@
   .semaforo-badge.amarelo { background: color-mix(in srgb, var(--amarelo) 18%, var(--card)); color: var(--amarelo); }
   .semaforo-badge.vermelho { background: color-mix(in srgb, var(--vermelho) 18%, var(--card)); color: var(--vermelho); }
   .importancia-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: var(--chip-bg); color: var(--text); }
+  .status-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; }
+  .status-badge.reviewed { background: rgba(255,255,255,0.22); }
+  .status-badge.pending { background: rgba(255,255,255,0.22); }
   .decision-text { white-space: pre-wrap; line-height: 1.65; color: var(--text); font-size: 1rem; }
 
   .section-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 1.5rem 0 0.75rem; }
@@ -64,6 +67,11 @@
     {% if decision.importancia and importance_levels[decision.importancia] %}
       <span class="importancia-badge">{{ importance_levels[decision.importancia].icone }} Importância {{ importance_levels[decision.importancia].label }}</span>
     {% endif %}
+    {% if decision.reviewed %}
+      <span class="status-badge reviewed">✔ Revisado</span>
+    {% else %}
+      <span class="status-badge pending">⏳ Aguardando revisão</span>
+    {% endif %}
   </div>
   <form method="post" action="{{ url_for('web_app.logout') }}" style="margin-top: 1rem;">
     <button type="submit" class="logout">Sair</button>
@@ -89,6 +97,12 @@
     {% endif %}
   </div>
   <div class="decision-text">{{ decision.decision_text }}</div>
+  {% if not decision.reviewed %}
+  <form method="post" action="{{ url_for('web_app.marketing_mark_reviewed', decision_id=decision.id) }}" style="margin-top: 1.25rem;">
+    <button type="submit" class="primary">✔ Marcar como revisado</button>
+    <span class="muted" style="margin-left: 0.6rem;">(sem precisar comentar — a vertical vai ver que o marketing já olhou)</span>
+  </form>
+  {% endif %}
 </div>
 
 {% if decision.riscos_json %}

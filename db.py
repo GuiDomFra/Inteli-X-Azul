@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS decisions (
     risco               TEXT,
     resumo              TEXT,
     perguntas_json      TEXT,
-    recomendacao        TEXT
+    recomendacao        TEXT,
+    reviewed            INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_decisions_channel_created
@@ -60,6 +61,7 @@ NEW_COLUMNS = {
     "sugestoes_json": "TEXT",
     "word_count": "INTEGER",
     "word_count_exceeded": "INTEGER",
+    "reviewed": "INTEGER NOT NULL DEFAULT 0",
 }
 
 
@@ -109,14 +111,27 @@ def get_decisions_by_vertical(vertical_id: str) -> list[sqlite3.Row]:
 
 
 def insert_comment(decision_id: int, author_role: str, author_name: str, content: str) -> int:
-    """Insere um comentário em uma decisão."""
+    """Insere um comentário em uma decisão e marca a decisão como revisada
+    pelo marketing — comentar é o sinal mais claro de que alguém do
+    marketing efetivamente olhou aquela proposta."""
     with get_connection() as conn:
         cursor = conn.execute(
             """INSERT INTO comments (decision_id, author_role, author_name, content)
                VALUES (?, ?, ?, ?)""",
             (decision_id, author_role, author_name, content)
         )
+        if author_role == "marketing":
+            conn.execute(
+                "UPDATE decisions SET reviewed = 1 WHERE id = ?", (decision_id,)
+            )
         return cursor.lastrowid
+
+
+def mark_reviewed(decision_id: int) -> None:
+    """Marca uma decisão como revisada pelo marketing, mesmo sem comentário
+    (ex.: marketing olhou e concordou, sem nada a acrescentar)."""
+    with get_connection() as conn:
+        conn.execute("UPDATE decisions SET reviewed = 1 WHERE id = ?", (decision_id,))
 
 
 def get_comments(decision_id: int) -> list[sqlite3.Row]:
