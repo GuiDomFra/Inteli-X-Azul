@@ -1,4 +1,4 @@
-# Inteli X Azul
+# Tucano
 
 Agente de IA que dá um **parecer de impacto de marca** para a Azul **antes**
 que uma proposta (campanha de destino, promoção TudoAzul, parceria da Azul
