@@ -13,6 +13,7 @@ from db import (
     insert_comment,
     insert_decision,
 )
+from importance import DEFAULT_IMPORTANCE, IMPORTANCE_LEVELS, sort_weight
 from verticals import VERTICALS, get_vertical
 
 
@@ -95,6 +96,7 @@ def painel():
     publico_alvo = ""
     canal = ""
     selected_verticals = [vertical["id"]]
+    importancia = DEFAULT_IMPORTANCE
 
     if request.method == "POST":
         decision_text = request.form.get("decision_text", "").strip()
@@ -103,6 +105,9 @@ def painel():
         selected_verticals = [
             v for v in request.form.getlist("verticais") if v in VERTICALS
         ] or [vertical["id"]]
+        importancia = request.form.get("importancia", DEFAULT_IMPORTANCE)
+        if importancia not in IMPORTANCE_LEVELS:
+            importancia = DEFAULT_IMPORTANCE
 
         if not decision_text:
             error = "Descreva a proposta antes de pedir o parecer."
@@ -130,6 +135,7 @@ def painel():
                         publico_alvo=publico_alvo or None,
                         canal=canal or None,
                         vertical=vertical_tag,
+                        importancia=importancia,
                         error=str(exc),
                     )
                 else:
@@ -139,6 +145,7 @@ def painel():
                         publico_alvo=publico_alvo or None,
                         canal=canal or None,
                         vertical=vertical_tag,
+                        importancia=importancia,
                         model_id=parecer.get("_model_id"),
                         semaforo=parecer["semaforo"],
                         riscos_json=json.dumps(parecer["riscos"], ensure_ascii=False),
@@ -159,6 +166,8 @@ def painel():
         decision_text=decision_text,
         publico_alvo=publico_alvo,
         canal=canal,
+        importance_levels=IMPORTANCE_LEVELS,
+        importancia=importancia,
     )
 
 
@@ -170,10 +179,14 @@ def marketing_dashboard():
         return redirect(url_for("web_app.login"))
 
     all_decisions = get_all_decisions()
+    all_decisions = sorted(
+        all_decisions, key=lambda d: sort_weight(d["importancia"]), reverse=True
+    )
     return render_template(
         "marketing_dashboard.html",
         decisions=all_decisions,
         verticals=VERTICALS,
+        importance_levels=IMPORTANCE_LEVELS,
     )
 
 
@@ -207,4 +220,5 @@ def marketing_decision_detail(decision_id: int):
         decision=decision,
         comments=comments,
         verticals=VERTICALS,
+        importance_levels=IMPORTANCE_LEVELS,
     )

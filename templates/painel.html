@@ -89,6 +89,32 @@
     transition: border-color 0.15s ease, background 0.15s ease;
   }
   .vertical-check input { accent-color: var(--accent); }
+
+  .importance-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.4rem 0 1.15rem;
+  }
+  .importance-option {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--field-border);
+    background: var(--input-bg);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .importance-option input { accent-color: var(--accent); }
+  .importance-option:has(input:checked) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
   .vertical-check:has(input:checked) {
     border-color: var(--accent);
     background: var(--accent-soft);
@@ -145,6 +171,16 @@
 
       <label for="canal">Canal (opcional)</label>
       <input type="text" id="canal" name="canal" value="{{ canal }}" placeholder="Ex.: redes sociais, e-mail, TV">
+
+      <label>Importância <span class="muted" style="font-weight:400;">(o quanto isso é urgente para o marketing revisar)</span></label>
+      <div class="importance-picker">
+        {% for level_id, info in importance_levels.items() %}
+        <label class="importance-option">
+          <input type="radio" name="importancia" value="{{ level_id }}" {% if level_id == importancia %}checked{% endif %}>
+          {{ info.icone }} {{ info.label }}
+        </label>
+        {% endfor %}
+      </div>
 
       <button type="submit" class="primary" id="submit-btn">✨ Gerar parecer</button>
     </form>

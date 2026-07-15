@@ -24,6 +24,7 @@
   .semaforo-badge.verde { background: color-mix(in srgb, var(--verde) 18%, var(--card)); color: var(--verde); }
   .semaforo-badge.amarelo { background: color-mix(in srgb, var(--amarelo) 18%, var(--card)); color: var(--amarelo); }
   .semaforo-badge.vermelho { background: color-mix(in srgb, var(--vermelho) 18%, var(--card)); color: var(--vermelho); }
+  .importancia-badge { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: var(--chip-bg); color: var(--text); }
   .decision-text { white-space: pre-wrap; line-height: 1.65; color: var(--text); font-size: 1rem; }
 
   .section-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 1.5rem 0 0.75rem; }
@@ -60,6 +61,9 @@
     {% if decision.semaforo %}
       <span class="semaforo-badge {{ decision.semaforo }}">{{ decision.semaforo }}</span>
     {% endif %}
+    {% if decision.importancia and importance_levels[decision.importancia] %}
+      <span class="importancia-badge">{{ importance_levels[decision.importancia].icone }} Importância {{ importance_levels[decision.importancia].label }}</span>
+    {% endif %}
   </div>
   <form method="post" action="{{ url_for('web_app.logout') }}" style="margin-top: 1rem;">
     <button type="submit" class="logout">Sair</button>
@@ -79,6 +83,9 @@
     {% endfor %}
     {% if decision.semaforo %}
       <span class="semaforo-badge {{ decision.semaforo }}">{{ decision.semaforo }}</span>
+    {% endif %}
+    {% if decision.importancia and importance_levels[decision.importancia] %}
+      <span class="importancia-badge">{{ importance_levels[decision.importancia].icone }} Importância {{ importance_levels[decision.importancia].label }}</span>
     {% endif %}
   </div>
   <div class="decision-text">{{ decision.decision_text }}</div>
