@@ -26,6 +26,27 @@
       --radius-md: 14px;
       --shadow-soft: 0 1px 2px rgba(16,24,64,0.04), 0 12px 32px -12px rgba(16,24,64,0.18);
       --shadow-lift: 0 20px 45px -18px rgba(16,24,64,0.35);
+      --border: rgba(16,24,64,0.05);
+      --input-bg: #fbfcfe;
+      --field-border: #e2e8f0;
+      --chip-bg: #f1f5f9;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-1: #0b1220;
+        --bg-2: #10182b;
+        --card: #131c30;
+        --text: #e6ebf5;
+        --muted: #94a3b8;
+        --accent-soft: color-mix(in srgb, var(--accent) 22%, #131c30);
+        --shadow-soft: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px -12px rgba(0,0,0,0.55);
+        --border: rgba(255,255,255,0.08);
+        --input-bg: #0f1830;
+        --field-border: #263252;
+        --chip-bg: #1a2438;
+        color-scheme: dark;
+      }
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -103,7 +124,7 @@
       padding: 1.9rem 2rem;
       box-shadow: var(--shadow-soft);
       margin-bottom: 1.5rem;
-      border: 1px solid rgba(16,24,64,0.05);
+      border: 1px solid var(--border);
       animation: rise 0.45s cubic-bezier(.2,.8,.2,1) both;
     }
     @keyframes rise {
@@ -115,18 +136,19 @@
     input[type=text], input[type=password], textarea {
       width: 100%;
       padding: 0.75rem 0.9rem;
-      border: 1.5px solid #e2e8f0;
+      border: 1.5px solid var(--field-border);
       border-radius: 12px;
       font-size: 1rem;
       margin-bottom: 1.15rem;
       font-family: inherit;
-      background: #fbfcfe;
+      background: var(--input-bg);
+      color: var(--text);
       transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
     input[type=text]:focus, input[type=password]:focus, textarea:focus {
       outline: none;
       border-color: var(--accent);
-      background: #fff;
+      background: var(--card);
       box-shadow: 0 0 0 4px var(--accent-soft);
     }
     textarea { min-height: 130px; resize: vertical; line-height: 1.5; }
@@ -146,6 +168,22 @@
     }
     button.primary:hover { transform: translateY(-2px); filter: brightness(1.05); }
     button.primary:active { transform: translateY(0); }
+    button.primary:disabled {
+      opacity: 0.75;
+      cursor: progress;
+      transform: none;
+    }
+    button.primary .spinner {
+      display: inline-block;
+      width: 0.95em; height: 0.95em;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      vertical-align: -0.15em;
+      margin-right: 0.45em;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .error {
       background: #fef2f2;
@@ -172,5 +210,6 @@
 </head>
 <body>
   {% block body %}{% endblock %}
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

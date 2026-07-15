@@ -42,11 +42,12 @@
     gap: 0.55rem;
     padding: 0.7rem 0.85rem;
     border-radius: 12px;
-    border: 1.5px solid #e2e8f0;
-    background: #fbfcfe;
+    border: 1.5px solid var(--field-border);
+    background: var(--input-bg);
     cursor: pointer;
     text-align: left;
     font-family: inherit;
+    color: var(--text);
     transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
   .vertical-chip:hover {
@@ -72,12 +73,33 @@
     text-align: center;
   }
   .demo-note code {
-    background: #f1f5f9;
+    background: var(--chip-bg);
     padding: 0.12rem 0.4rem;
     border-radius: 6px;
     font-size: 0.8rem;
   }
+
+  .sky-decor {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .sky-decor svg { position: absolute; opacity: 0.5; }
+  @media (prefers-color-scheme: dark) { .sky-decor svg { opacity: 0.12; } }
+  .cloud-1 { top: 8%; left: -4%; width: 220px; animation: drift 46s linear infinite; }
+  .cloud-2 { top: 22%; right: -6%; width: 160px; animation: drift-rev 60s linear infinite; }
+  .cloud-3 { bottom: 12%; left: 8%; width: 130px; animation: drift 70s linear infinite; }
+  @keyframes drift { from { transform: translateX(0); } to { transform: translateX(60px); } }
+  @keyframes drift-rev { from { transform: translateX(0); } to { transform: translateX(-60px); } }
 </style>
+
+<div class="sky-decor" aria-hidden="true">
+  <svg class="cloud-1" viewBox="0 0 100 40" fill="none"><ellipse cx="30" cy="25" rx="28" ry="13" fill="#ffffff"/><ellipse cx="55" cy="18" rx="20" ry="15" fill="#ffffff"/><ellipse cx="75" cy="26" rx="18" ry="10" fill="#ffffff"/></svg>
+  <svg class="cloud-2" viewBox="0 0 100 40" fill="none"><ellipse cx="30" cy="25" rx="28" ry="13" fill="#ffffff"/><ellipse cx="55" cy="18" rx="20" ry="15" fill="#ffffff"/><ellipse cx="75" cy="26" rx="18" ry="10" fill="#ffffff"/></svg>
+  <svg class="cloud-3" viewBox="0 0 100 40" fill="none"><ellipse cx="30" cy="25" rx="28" ry="13" fill="#ffffff"/><ellipse cx="55" cy="18" rx="20" ry="15" fill="#ffffff"/><ellipse cx="75" cy="26" rx="18" ry="10" fill="#ffffff"/></svg>
+</div>
 
 <div class="hero">
   <span class="plane">✈️</span>

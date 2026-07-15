@@ -5,13 +5,22 @@
   .risk-item, .suggestion-item {
     padding: 0.85rem 1rem;
     border-radius: 12px;
-    background: #f8fafc;
+    background: var(--chip-bg);
     border-left: 4px solid var(--accent);
     margin-bottom: 0.6rem;
+    opacity: 0;
+    animation: item-in 0.4s cubic-bezier(.2,.8,.2,1) forwards;
   }
   .risk-item strong { color: var(--accent-dark); }
   .suggestion-item { border-left-color: var(--verde); }
   .suggestion-item::before { content: "💡 "; }
+  @keyframes item-in {
+    from { opacity: 0; transform: translateX(-6px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .risk-item:nth-child(1), .suggestion-item:nth-child(1) { animation-delay: 0.05s; }
+  .risk-item:nth-child(2), .suggestion-item:nth-child(2) { animation-delay: 0.15s; }
+  .risk-item:nth-child(3), .suggestion-item:nth-child(3) { animation-delay: 0.25s; }
 
   .semaforo-hero {
     display: flex;
@@ -44,7 +53,7 @@
   .word-bar {
     height: 6px;
     border-radius: 999px;
-    background: #e2e8f0;
+    background: var(--field-border);
     overflow: hidden;
     margin-top: 0.9rem;
   }
@@ -71,8 +80,9 @@
     gap: 0.4rem;
     padding: 0.5rem 0.85rem;
     border-radius: 999px;
-    border: 1.5px solid #e2e8f0;
-    background: #fbfcfe;
+    border: 1.5px solid var(--field-border);
+    background: var(--input-bg);
+    color: var(--text);
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 600;
@@ -96,7 +106,7 @@
     gap: 0.35rem;
     padding: 0.3rem 0.7rem;
     border-radius: 999px;
-    background: #f1f5f9;
+    background: var(--chip-bg);
     font-size: 0.78rem;
     font-weight: 600;
     color: var(--text);
@@ -116,7 +126,7 @@
   <div class="card">
     <h1 style="margin-top:0; font-size:1.15rem;">📝 Nova análise</h1>
     {% if error %}<div class="error">⚠️ {{ error }}</div>{% endif %}
-    <form method="post">
+    <form method="post" id="parecer-form">
       <label for="decision_text">Briefing ou proposta em estágio inicial</label>
       <textarea id="decision_text" name="decision_text" placeholder="Ex.: Vamos lançar uma campanha destacando..." required>{{ decision_text }}</textarea>
 
@@ -136,7 +146,7 @@
       <label for="canal">Canal (opcional)</label>
       <input type="text" id="canal" name="canal" value="{{ canal }}" placeholder="Ex.: redes sociais, e-mail, TV">
 
-      <button type="submit" class="primary">✨ Gerar parecer</button>
+      <button type="submit" class="primary" id="submit-btn">✨ Gerar parecer</button>
     </form>
   </div>
 
@@ -169,18 +179,22 @@
 
     <div class="section-label">Pontos de risco</div>
     {% if parecer.riscos %}
+      <div>
       {% for r in parecer.riscos %}
       <div class="risk-item"><strong>{{ r.diretriz }}</strong> — {{ r.risco }}</div>
       {% endfor %}
+      </div>
     {% else %}
       <p class="muted">Nenhum risco de marca identificado.</p>
     {% endif %}
 
     <div class="section-label">Sugestões de ajuste</div>
     {% if parecer.sugestoes %}
+      <div>
       {% for s in parecer.sugestoes %}
       <div class="suggestion-item">{{ s }}</div>
       {% endfor %}
+      </div>
     {% else %}
       <p class="muted">—</p>
     {% endif %}
@@ -193,4 +207,14 @@
 <footer class="disclaimer">
   Este parecer é informativo — a decisão final é sempre da equipe de marca.
 </footer>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById('parecer-form').addEventListener('submit', function () {
+    var btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Analisando com a Claude…';
+  });
+</script>
 {% endblock %}
