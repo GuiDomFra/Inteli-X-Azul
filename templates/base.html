@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Parecer de Marca · Azul{% endblock %}</title>
+  <style>
+    :root {
+      --azul-blue: #003DA6;
+      --accent: {{ vertical.cor if vertical else '#003DA6' }};
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header.topbar {
+      background: var(--accent);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header.topbar .brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    header.topbar form { margin: 0; }
+    header.topbar button {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 6px;
+      padding: 0.4rem 0.9rem;
+      cursor: pointer;
+    }
+    main {
+      max-width: 720px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+    }
+    label { display: block; font-weight: 600; margin-bottom: 0.3rem; font-size: 0.9rem; }
+    input[type=text], input[type=password], textarea {
+      width: 100%;
+      padding: 0.6rem 0.7rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      font-family: inherit;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.4rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button.primary:hover { filter: brightness(1.08); }
+    .error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+    .muted { color: var(--muted); font-size: 0.85rem; }
+    footer.disclaimer {
+      max-width: 720px;
+      margin: 0 auto 2rem;
+      padding: 0 1rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  {% block body %}{% endblock %}
+</body>
+</html>

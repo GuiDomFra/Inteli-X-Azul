@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ vertical.nome }} · Parecer de Marca{% endblock %}
+{% block body %}
+<header class="topbar">
+  <div class="brand">{{ vertical.icone }} {{ vertical.nome }} · Parecer de Marca</div>
+  <form method="post" action="{{ url_for('web_app.logout') }}">
+    <button type="submit">Sair</button>
+  </form>
+</header>
+<main>
+  <div class="card">
+    <h1 style="margin-top:0; font-size:1.2rem;">Nova análise</h1>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <form method="post">
+      <label for="decision_text">Briefing ou proposta em estágio inicial</label>
+      <textarea id="decision_text" name="decision_text" required>{{ decision_text }}</textarea>
+
+      <label for="publico_alvo">Público-alvo (opcional)</label>
+      <input type="text" id="publico_alvo" name="publico_alvo" value="{{ publico_alvo }}">
+
+      <label for="canal">Canal (opcional)</label>
+      <input type="text" id="canal" name="canal" value="{{ canal }}">
+
+      <button type="submit" class="primary">Gerar parecer</button>
+    </form>
+  </div>
+
+  {% if parecer %}
+  <div class="card">
+    {% set semaforo_info = {
+      'verde': ('🟢', 'Alinhado'),
+      'amarelo': ('🟡', 'Atenção'),
+      'vermelho': ('🔴', 'Conflito'),
+    } %}
+    {% set emoji, label = semaforo_info.get(parecer.semaforo, ('', parecer.semaforo)) %}
+    <h2 style="margin-top:0;">{{ emoji }} Semáforo: {{ label }}</h2>
+
+    <h3>Pontos de risco</h3>
+    {% if parecer.riscos %}
+    <ul>
+      {% for r in parecer.riscos %}
+      <li><strong>{{ r.diretriz }}</strong>: {{ r.risco }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">Nenhum risco de marca identificado.</p>
+    {% endif %}
+
+    <h3>Sugestões de ajuste</h3>
+    {% if parecer.sugestoes %}
+    <ul>
+      {% for s in parecer.sugestoes %}
+      <li>{{ s }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">—</p>
+    {% endif %}
+
+    <p class="muted">{{ parecer._word_count }} / 300 palavras · modelo {{ parecer._model_id }}</p>
+  </div>
+  {% endif %}
+</main>
+<footer class="disclaimer">
+  Este parecer é informativo — a decisão final é sempre da equipe de marca.
+</footer>
+{% endblock %}

@@ -1,48 +1,128 @@
-brand_name: "SuaMarca (exemplo — substitua pelos dados reais da sua marca)"
+brand_name: "Azul"
 
-tone_of_voice:
-  description: >
-    Direto, caloroso e confiante, sem ser arrogante. Evitamos jargão
-    corporativo e preferimos linguagem simples e humana.
-  traits:
-    - "Claro e direto — evite rodeios"
-    - "Caloroso, mas profissional — não somos informais demais"
-    - "Confiante sem ser arrogante"
-  avoid:
-    - "Jargão de startup ('sinergia', 'disruptivo', 'ecossistema')"
-    - "Humor sarcástico ou ironia"
-    - "Superlativos exagerados ('o melhor do mundo', 'revolucionário')"
+posicionamento:
+  tagline: "A melhor experiência de voo do Brasil"
+  descricao: >
+    A Azul se posiciona pela melhor experiência de voo do Brasil: cuidado
+    genuíno com o passageiro/cliente e a maior malha doméstica do país,
+    conectando o Brasil que antes só viajava de ônibus. Não competimos por
+    ser os mais baratos nem prometemos ser infalíveis — competimos por sermos
+    os mais humanos e os que mais se importam com quem nos escolhe, em
+    qualquer uma das nossas verticais.
+  publico_alvo: >
+    Brasileiros em geral (lazer e corporativo), com ênfase em conectar
+    cidades médias e pequenas pouco atendidas pela concorrência.
+  diferenciacao_competitiva: >
+    Maior malha doméstica do Brasil e cuidado humano na experiência de ponta
+    a ponta — a diferenciação vem de experiência, não de preço.
 
-core_values:
-  - name: "Transparência"
-    description: "Somos honestos sobre limitações e prazos."
-  - name: "Simplicidade"
-    description: "Preferimos soluções simples a impressionar com complexidade."
-  - name: "Confiabilidade"
-    description: "Cumprimos o que prometemos."
+tom_de_voz:
+  descricao: "Caloroso, brasileiro e acessível — fala como gente, não como corporação."
+  tracos:
+    - "Caloroso — trata quem nos escolhe como pessoa, não como número de protocolo"
+    - "Brasileiro — linguagem naturalmente brasileira, sem gírias forçadas"
+    - "Acessível — evita jargão técnico sem explicação"
+    - "Otimista e próximo, sem infantilizar o interlocutor"
+  evitar:
+    - "Tom corporativo, frio ou burocrático"
+    - "Jargão técnico sem explicação (ex.: 'slot', 'load factor', 'lead time')"
+    - "Humor em cima de falhas operacionais (atraso, cancelamento, extravio)"
 
-positioning:
-  tagline: "Exemplo de tagline da marca — substitua"
-  target_audience: "Descreva o público-alvo principal aqui"
-  competitive_differentiation: >
-    O que nos diferencia da concorrência (preencha com o posicionamento real).
+diretrizes_proibidas:
+  - id: "tom_low_cost"
+    titulo: "Nunca usar tom de empresa barata / low-cost"
+    descricao: >
+      A Azul não compete por ser a mais barata. Não usar linguagem de "preço
+      baixo", "voe pagando menos", "imperdível" como argumento central, nem se
+      posicionar como alternativa econômica às outras companhias. O valor da
+      Azul é a experiência, não o desconto.
+  - id: "pontualidade_absoluta"
+    titulo: "Nunca prometer pontualidade/prazo absoluto"
+    descricao: >
+      Não fazer promessas de pontualidade ou prazo 100%, "nunca atrasa",
+      "sempre no horário/prazo" ou qualquer garantia operacional
+      incondicional. Prazos e pontualidade podem ser mencionados como
+      compromisso/meta, nunca como garantia.
+  - id: "ataque_concorrente"
+    titulo: "Nunca citar ou atacar concorrentes nominalmente"
+    descricao: >
+      Não mencionar Gol, LATAM ou qualquer concorrente pelo nome em tom
+      comparativo negativo. Diferenciação se faz afirmando o que a Azul
+      oferece, nunca depreciando a concorrência.
+  - id: "exclusao_estereotipo"
+    titulo: "Não comunicar de forma que exclua ou estereotipe grupos"
+    descricao: "Evitar estereótipos regionais, sociais ou de qualquer grupo de pessoas."
+  - id: "promessa_impossivel"
+    titulo: "Não prometer o que a operação não pode garantir"
+    descricao: >
+      Evitar prometer disponibilidade, upgrade garantido ou benefícios que
+      dependem de fatores fora do controle da Azul (clima, malha, capacidade,
+      estoque de parceiros).
 
-things_to_avoid:
-  - "Comparações diretas e agressivas com concorrentes nomeados"
-  - "Promessas que a equipe de produto não pode cumprir"
-  - "Comunicação que exclua ou estereotipe grupos"
-  - "Mudanças de nome/naming sem checar disponibilidade de domínio/marca registrada"
+# Diretrizes adicionais específicas de cada vertical da Azul, somadas às
+# diretrizes_proibidas acima na hora de montar o brandbook efetivo de uma
+# vertical (veja verticals.py / brand_advisor.load_brand_guidelines_text).
+verticais:
+  linhas_aereas:
+    nome: "Azul Linhas Aéreas"
+    foco: "Campanhas de destino, malha aérea, experiência de voo."
+    diretrizes_adicionais:
+      - id: "seguranca_operacional"
+        titulo: "Não usar segurança de voo como gancho de marketing"
+        descricao: >
+          Não transformar segurança operacional em apelo publicitário
+          ("o voo mais seguro", "nunca tivemos um incidente") — é um dado
+          sensível, não um argumento de venda.
+  cargo:
+    nome: "Azul Cargo"
+    foco: "Transporte de cargas e encomendas — público é majoritariamente B2B/lojista."
+    diretrizes_adicionais:
+      - id: "prazo_entrega_absoluto"
+        titulo: "Não garantir prazo de entrega de forma incondicional"
+        descricao: >
+          Prazos de entrega da Azul Cargo dependem de malha e terceiros
+          (transportadoras parceiras na ponta) — comunicar como "prazo
+          estimado", nunca como garantia contratual.
+  viagens:
+    nome: "Azul Viagens"
+    foco: "Pacotes e parcerias de turismo (hospedagem, passeios, roteiros)."
+    diretrizes_adicionais:
+      - id: "preco_pacote_final"
+        titulo: "Sempre deixar claro que o preço de pacote pode variar"
+        descricao: >
+          Preços de pacotes turísticos dependem de disponibilidade de
+          hospedagem/parceiros — nunca comunicar um preço de pacote como fixo
+          ou garantido sem a ressalva "sujeito à disponibilidade".
+  tudoazul:
+    nome: "TudoAzul"
+    foco: "Programa de fidelidade — acúmulo e resgate de pontos."
+    diretrizes_adicionais:
+      - id: "valor_ponto_implicito"
+        titulo: "Não prometer valor fixo de resgate para os pontos"
+        descricao: >
+          O valor de resgate de pontos TudoAzul varia por promoção e
+          disponibilidade — não comunicar "seus pontos valem R$X" como se
+          fosse uma taxa de conversão garantida e permanente.
 
-example_past_decisions:
-  - decision: "Renomear o produto X para 'Y'"
-    verdict: "Não aprovado"
-    reason: "Conflito com marca já registrada no mesmo setor"
+exemplos_de_aplicacao:
+  - decisao: "Campanha anunciando 'a passagem mais barata do Brasil'"
+    semaforo: "vermelho"
+    motivo: "Conflita com a diretriz 'tom_low_cost'."
+  - decisao: "Parceria de turismo regional destacando cidades pouco atendidas"
+    semaforo: "verde"
+    motivo: "Reforça a diferenciação de malha doméstica."
 
 metadata:
-  last_updated: "2026-07-13"
-  maintained_by: "Equipe de Marca (preencher)"
+  brand: "Azul"
+  status: "configured"
+  last_updated: "2026-07-15"
+  maintained_by: "Time de Marca — Azul"
   instructions_for_editing: >
-    Este arquivo é um placeholder genérico. Substitua os valores acima pelas
-    diretrizes reais da marca assim que estiverem documentadas. Mantenha as
-    chaves de topo (tone_of_voice, core_values, positioning, things_to_avoid)
-    para que brand_advisor.py continue funcionando sem alterações de código.
+    Este é um primeiro rascunho de brandbook derivado diretamente da spec
+    fornecida pela Azul — AINDA PRECISA de revisão e validação pelo time de
+    marca real da Azul antes de ser considerado definitivo (tagline exata,
+    lista completa de valores e de abordagens proibidas, inclusive as
+    diretrizes adicionais por vertical). Mantenha a chave metadata.status
+    como "configured" após a revisão; se removida ou diferente de
+    "configured", o agente se recusa a gerar pareceres e avisa que falta o
+    brandbook.

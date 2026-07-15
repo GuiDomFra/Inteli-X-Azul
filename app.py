@@ -1,17 +1,32 @@
 from flask import Flask, request
-from slack_bolt.adapter.flask import SlackRequestHandler
 
-from db import init_db
-from slack_app import bolt_app
+from config import SECRET_KEY, slack_configured, validate_config
+
+validate_config()
+
+from db import init_db  # noqa: E402
+from web_app import web_app  # noqa: E402
 
 flask_app = Flask(__name__)
-handler = SlackRequestHandler(bolt_app)
+flask_app.secret_key = SECRET_KEY
+flask_app.register_blueprint(web_app)
 init_db()
 
+if slack_configured():
+    from slack_bolt.adapter.flask import SlackRequestHandler
 
-@flask_app.route("/slack/events", methods=["POST"])
-def slack_events():
-    return handler.handle(request)
+    from slack_app import bolt_app
+
+    handler = SlackRequestHandler(bolt_app)
+
+    @flask_app.route("/slack/events", methods=["POST"])
+    def slack_events():
+        return handler.handle(request)
+else:
+    print(
+        "[aviso] SLACK_BOT_TOKEN/SLACK_SIGNING_SECRET não configurados — "
+        "rota /slack/events desativada. Só a interface web (/login) está disponível."
+    )
 
 
 if __name__ == "__main__":

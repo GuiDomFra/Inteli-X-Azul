@@ -7,7 +7,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import anthropic
 
-from brand_advisor import BrandAdvisorError, get_brand_parecer
+from brand_advisor import (
+    BrandAdvisorError,
+    compute_report_word_count,
+    get_brand_parecer,
+    load_brand_guidelines_text,
+)
 
 
 def _fake_response(parecer_dict, stop_reason="end_turn", model="claude-opus-4-8"):
@@ -17,18 +22,17 @@ def _fake_response(parecer_dict, stop_reason="end_turn", model="claude-opus-4-8"
 
 def test_get_brand_parecer_happy_path():
     fake = {
-        "veredito": "aprovado_com_ressalvas",
-        "risco": "medio",
-        "resumo": "Ok com ajustes.",
-        "principais_riscos": ["Nome pode confundir com concorrente X"],
-        "perguntas_antes_de_aprovar": ["Já checamos disponibilidade de domínio?"],
-        "recomendacao": "Ajustar o nome antes de anunciar.",
+        "semaforo": "amarelo",
+        "riscos": [{"diretriz": "tom_low_cost", "risco": "Menção a preço baixo."}],
+        "sugestoes": ["Focar na experiência em vez do preço."],
     }
     with patch("brand_advisor.client.messages.create", return_value=_fake_response(fake)):
         result = get_brand_parecer("Renomear produto X para Y", "diretrizes de teste")
-    assert result["veredito"] == "aprovado_com_ressalvas"
-    assert result["principais_riscos"] == fake["principais_riscos"]
+    assert result["semaforo"] == "amarelo"
+    assert result["riscos"] == fake["riscos"]
+    assert result["sugestoes"] == fake["sugestoes"]
     assert result["_model_id"] == "claude-opus-4-8"
+    assert result["_word_count"] == compute_report_word_count(fake)
 
 
 def test_get_brand_parecer_raises_on_refusal():
@@ -53,3 +57,82 @@ def test_get_brand_parecer_wraps_connection_errors():
             assert False, "esperava BrandAdvisorError"
         except BrandAdvisorError as exc:
             assert exc.code == "connection_error"
+
+
+def test_get_brand_parecer_truncates_to_three_items():
+    fake = {
+        "semaforo": "vermelho",
+        "riscos": [{"diretriz": f"d{i}", "risco": f"r{i}"} for i in range(5)],
+        "sugestoes": [f"s{i}" for i in range(5)],
+    }
+    with patch("brand_advisor.client.messages.create", return_value=_fake_response(fake)):
+        result = get_brand_parecer("decisão com muitos riscos", "diretrizes")
+    assert len(result["riscos"]) == 3
+    assert len(result["sugestoes"]) == 3
+
+
+def test_get_brand_parecer_annotates_word_count():
+    fake = {
+        "semaforo": "verde",
+        "riscos": [],
+        "sugestoes": ["uma sugestão " * 50],
+    }
+    with patch("brand_advisor.client.messages.create", return_value=_fake_response(fake)):
+        result = get_brand_parecer("decisão qualquer", "diretrizes")
+    assert result["_word_count"] == compute_report_word_count(fake)
+    assert result["_word_count"] > 0
+
+
+def test_load_brand_guidelines_text_missing_file(tmp_path):
+    try:
+        load_brand_guidelines_text(path=tmp_path / "nao_existe.yaml")
+        assert False, "esperava BrandAdvisorError"
+    except BrandAdvisorError as exc:
+        assert exc.code == "brandbook_missing"
+
+
+def test_load_brand_guidelines_text_not_configured(tmp_path):
+    path = tmp_path / "brand.yaml"
+    path.write_text("brand_name: Teste\n", encoding="utf-8")
+    try:
+        load_brand_guidelines_text(path=path)
+        assert False, "esperava BrandAdvisorError"
+    except BrandAdvisorError as exc:
+        assert exc.code == "brandbook_not_configured"
+
+
+def test_load_brand_guidelines_text_invalid_yaml(tmp_path):
+    path = tmp_path / "brand.yaml"
+    path.write_text("chave: [nao fechado\n", encoding="utf-8")
+    try:
+        load_brand_guidelines_text(path=path)
+        assert False, "esperava BrandAdvisorError"
+    except BrandAdvisorError as exc:
+        assert exc.code == "brandbook_invalid"
+
+
+def test_load_brand_guidelines_text_configured(tmp_path):
+    path = tmp_path / "brand.yaml"
+    path.write_text("brand_name: Teste\nmetadata:\n  status: configured\n", encoding="utf-8")
+    text = load_brand_guidelines_text(path=path)
+    assert "Teste" in text
+
+
+def test_load_brand_guidelines_text_without_vertical_has_no_vertical_specific_rule():
+    text = load_brand_guidelines_text()
+    assert "prazo_entrega_absoluto" not in text
+    assert "vertical_ativa" not in text
+
+
+def test_load_brand_guidelines_text_with_vertical_merges_additional_rules():
+    text = load_brand_guidelines_text(vertical="cargo")
+    assert "prazo_entrega_absoluto" in text
+    assert "vertical_ativa" in text
+    assert "Azul Cargo" in text
+    # diretrizes do núcleo continuam presentes junto das da vertical
+    assert "tom_low_cost" in text
+
+
+def test_load_brand_guidelines_text_unknown_vertical_falls_back_to_core():
+    text = load_brand_guidelines_text(vertical="vertical_que_nao_existe")
+    assert "vertical_ativa" not in text

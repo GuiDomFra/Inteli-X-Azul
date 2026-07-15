@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Login · Parecer de Marca Azul{% endblock %}
+{% block body %}
+<header class="topbar">
+  <div class="brand">✈️ Parecer de Marca · Azul</div>
+</header>
+<main>
+  <div class="card">
+    <h1 style="margin-top:0;">Entrar</h1>
+    <p class="muted">Cada vertical da Azul tem seu próprio login e brandbook.</p>
+
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+    <form method="post">
+      <label for="username">Usuário</label>
+      <input type="text" id="username" name="username" autocomplete="username" required>
+
+      <label for="password">Senha</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+      <button type="submit" class="primary">Entrar</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 style="margin-top:0; font-size:1rem;">Contas de demonstração</h2>
+    <p class="muted">Senha para todas: <code>azul123</code></p>
+    <ul class="muted">
+      {% for vertical_id, info in verticals.items() %}
+      <li>{{ info.icone }} <strong>{{ info.nome }}</strong> — usuário: <code>{{ vertical_id }}</code></li>
+      {% endfor %}
+    </ul>
+  </div>
+</main>
+<footer class="disclaimer">
+  Protótipo acadêmico — login de demonstração, não usar credenciais reais.
+</footer>
+{% endblock %}

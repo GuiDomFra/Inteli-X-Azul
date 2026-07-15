@@ -1,64 +1,55 @@
 import time
 
-VERDICT_EMOJI = {
-    "aprovado": "✅",
-    "aprovado_com_ressalvas": "⚠️",
-    "nao_aprovado": "🛑",
-    "precisa_mais_info": "❓",
-}
+from brand_advisor import NO_GUIDELINE_SENTINEL
 
-VERDICT_LABEL = {
-    "aprovado": "Aprovado",
-    "aprovado_com_ressalvas": "Aprovado com ressalvas",
-    "nao_aprovado": "Não aprovado",
-    "precisa_mais_info": "Precisa de mais informações",
-}
-
-RISK_EMOJI = {
-    "baixo": "🟢",
-    "medio": "🟡",
-    "alto": "🔴",
-}
+SEMAFORO_EMOJI = {"verde": "🟢", "amarelo": "🟡", "vermelho": "🔴"}
+SEMAFORO_LABEL = {"verde": "Alinhado", "amarelo": "Atenção", "vermelho": "Conflito"}
 
 # Cor de marca da Azul usada na barra lateral do attachment do Slack.
-# Ajuste para o hex exato do guia de marca da Azul se ele for diferente.
+# TODO: valor ainda não confirmado com o time de marca da Azul — ajustar
+# para o hex exato do guia de identidade visual assim que disponível.
 AZUL_BLUE = "#003DA6"
 
 BRAND_FOOTER = "✈️ Azul Linhas Aéreas · Parecer de Marca automático"
 
+DISCLAIMER = "Este parecer é informativo — a decisão final é sempre da equipe de marca."
+
+
+def _format_risco(risco: dict) -> str:
+    diretriz = risco["diretriz"]
+    if diretriz == NO_GUIDELINE_SENTINEL:
+        return f"• _Sem diretriz aplicável_: {risco['risco']}"
+    return f"• *{diretriz}*: {risco['risco']}"
+
 
 def format_slack_blocks(parecer: dict) -> list:
-    emoji = VERDICT_EMOJI.get(parecer["veredito"], "")
-    veredito_label = VERDICT_LABEL.get(parecer["veredito"], parecer["veredito"])
-    risco_emoji = RISK_EMOJI.get(parecer["risco"], "")
-    riscos = "\n".join(f"• {r}" for r in parecer["principais_riscos"]) or "—"
-    perguntas = "\n".join(f"• {q}" for q in parecer["perguntas_antes_de_aprovar"]) or "—"
+    emoji = SEMAFORO_EMOJI.get(parecer["semaforo"], "")
+    label = SEMAFORO_LABEL.get(parecer["semaforo"], parecer["semaforo"])
+    riscos = "\n".join(_format_risco(r) for r in parecer["riscos"]) or "Nenhum risco de marca identificado."
+    sugestoes = "\n".join(f"• {s}" for s in parecer["sugestoes"]) or "—"
+
     return [
         {"type": "header", "text": {"type": "plain_text", "text": f"{emoji} Parecer de Marca"}},
         {
             "type": "context",
-            "elements": [{"type": "mrkdwn", "text": "✈️ *Azul Linhas Aéreas* · Parceria de Marca"}],
+            "elements": [{"type": "mrkdwn", "text": "✈️ *Azul Linhas Aéreas* · Parecer de Marca"}],
         },
         {
             "type": "section",
-            "fields": [
-                {"type": "mrkdwn", "text": f"*Veredito*\n{emoji} {veredito_label}"},
-                {"type": "mrkdwn", "text": f"*Risco*\n{risco_emoji} {parecer['risco'].capitalize()}"},
-            ],
+            "text": {"type": "mrkdwn", "text": f"*Semáforo*\n{emoji} {label}"},
         },
-        {"type": "section", "text": {"type": "mrkdwn", "text": parecer["resumo"]}},
         {"type": "divider"},
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": f"*Principais riscos de marca:*\n{riscos}"},
+            "text": {"type": "mrkdwn", "text": f"*Pontos de risco:*\n{riscos}"},
         },
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": f"*Perguntas antes de aprovar:*\n{perguntas}"},
+            "text": {"type": "mrkdwn", "text": f"*Sugestões de ajuste:*\n{sugestoes}"},
         },
         {
-            "type": "section",
-            "text": {"type": "mrkdwn", "text": f"*Recomendação:*\n{parecer['recomendacao']}"},
+            "type": "context",
+            "elements": [{"type": "mrkdwn", "text": DISCLAIMER}],
         },
     ]
 
@@ -73,5 +64,6 @@ def format_slack_attachment(parecer: dict) -> dict:
 
 
 def format_fallback_text(parecer: dict) -> str:
-    veredito_label = VERDICT_LABEL.get(parecer["veredito"], parecer["veredito"])
-    return f"✈️ Parecer de Marca (Azul) — {veredito_label} (risco {parecer['risco']}): {parecer['resumo']}"
+    label = SEMAFORO_LABEL.get(parecer["semaforo"], parecer["semaforo"])
+    n = len(parecer["riscos"])
+    return f"✈️ Parecer de Marca (Azul) — {label} ({n} risco(s) identificado(s))."
