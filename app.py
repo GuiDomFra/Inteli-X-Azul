@@ -42,7 +42,10 @@ else:
 
 
 if __name__ == "__main__":
+    # host="0.0.0.0": escuta em todas as interfaces, não só 127.0.0.1 —
+    # necessário para o encaminhamento de porta do Codespace/devcontainer
+    # detectar e expor a porta automaticamente.
     # threaded=True: necessário para o lazy listener do Bolt (chamada ao
     # Claude, que pode levar vários segundos) não ficar preso atrás da
     # thread principal do servidor de desenvolvimento do Flask.
-    flask_app.run(port=5000, threaded=True)
+    flask_app.run(host="0.0.0.0", port=5000, threaded=True)
