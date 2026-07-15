@@ -1,6 +1,12 @@
 <svg viewBox="0 0 400 110" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
   <!-- deriva (cauda vertical) -->
   <path d="M70,39 L110,39 L80,5 Z" fill="#0b2a5b"/>
+  <!-- logo em mosaico colorido na cauda -->
+  <rect x="83" y="9" width="6" height="6" fill="#4a90d9"/>
+  <rect x="79" y="16" width="6" height="6" fill="#2ea84a"/>
+  <rect x="87" y="16" width="6" height="6" fill="#00a19a"/>
+  <rect x="79" y="24" width="6" height="6" fill="#f2b705"/>
+  <rect x="87" y="24" width="6" height="6" fill="#4a90d9"/>
 
   <!-- asa principal -->
   <path d="M180,71 L155,100 L230,71 Z" fill="#1f3a63"/>
@@ -17,14 +23,20 @@
            C35,72 20,66 20,55 Z"
         fill="#ffffff" stroke="#8ea0c2" stroke-width="2.5"/>
 
-  <!-- trem de pouso (por cima da asa, pra ficar visível) -->
-  <line x1="165" y1="73" x2="165" y2="88" stroke="#334155" stroke-width="3"/>
-  <circle cx="165" cy="92" r="5" fill="#334155"/>
-  <line x1="210" y1="73" x2="210" y2="88" stroke="#334155" stroke-width="3"/>
-  <circle cx="210" cy="92" r="5" fill="#334155"/>
+  <!-- barriga azul-marinho (bicolor, como a livrea real) -->
+  <path d="M75,73 L275,73 L275,68 L75,55 Z" fill="#0b2a5b"/>
 
-  <!-- friso verde -->
-  <path d="M65,63 L275,63" stroke="#2ea84a" stroke-width="4" stroke-linecap="round"/>
+  <!-- trem de pouso (por cima da asa, pra ficar visível) -->
+  <line x1="165" y1="73" x2="165" y2="91" stroke="#334155" stroke-width="3"/>
+  <circle cx="165" cy="95" r="5" fill="#334155"/>
+  <line x1="210" y1="73" x2="210" y2="91" stroke="#334155" stroke-width="3"/>
+  <circle cx="210" cy="95" r="5" fill="#334155"/>
+  <!-- trem de pouso do nariz -->
+  <line x1="295" y1="71" x2="295" y2="83" stroke="#334155" stroke-width="2.5"/>
+  <circle cx="295" cy="86" r="4" fill="#334155"/>
+
+  <!-- friso verde, na linha de transição branco/azul -->
+  <path d="M75,55 L275,68" stroke="#2ea84a" stroke-width="3" stroke-linecap="round"/>
 
   <!-- janela da cabine -->
   <ellipse cx="335" cy="53" rx="7" ry="5" fill="#0b2a5b"/>
