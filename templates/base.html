@@ -99,7 +99,8 @@
       font-size: 1.15rem;
     }
     header.topbar form { margin: 0; }
-    header.topbar button.logout {
+    /* Reutilizável em qualquer botão "Sair" sobre fundo colorido (topbar ou hero) */
+    button.logout {
       background: rgba(255,255,255,0.14);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.35);
@@ -111,7 +112,7 @@
       font-weight: 600;
       transition: background 0.15s ease, transform 0.15s ease;
     }
-    header.topbar button.logout:hover { background: rgba(255,255,255,0.26); transform: translateY(-1px); }
+    button.logout:hover { background: rgba(255,255,255,0.26); transform: translateY(-1px); }
 
     main {
       max-width: 760px;

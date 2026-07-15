@@ -103,8 +103,15 @@
 </style>
 
 <div class="hero">
-  <h1>📊 Dashboard de Marketing</h1>
-  <p>Visão consolidada, filtrável, de todos os pareceres de marca das 6 verticais da Azul</p>
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+    <div>
+      <h1 style="margin: 0; font-size: 1.5rem; font-weight: 700;">📊 Dashboard de Marketing</h1>
+      <p style="margin: 0.4rem 0 0; opacity: 0.9; font-size: 0.95rem;">Visão consolidada, filtrável, de todos os pareceres de marca das 6 verticais da Azul</p>
+    </div>
+    <form method="post" action="{{ url_for('web_app.logout') }}">
+      <button type="submit" class="logout">Sair</button>
+    </form>
+  </div>
 </div>
 
 <div class="stats-grid">
