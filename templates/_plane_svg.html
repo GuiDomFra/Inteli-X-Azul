@@ -1,47 +1,51 @@
-<svg viewBox="0 0 300 120" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-  <!-- trem de pouso -->
-  <line x1="90" y1="77" x2="90" y2="86" stroke="#334155" stroke-width="3"/>
-  <circle cx="90" cy="91" r="5" fill="#334155"/>
-  <line x1="180" y1="77" x2="180" y2="86" stroke="#334155" stroke-width="3"/>
-  <circle cx="180" cy="91" r="5" fill="#334155"/>
-
-  <!-- asa e motor -->
-  <path d="M110,76 L95,105 L165,76 Z" fill="var(--azul-blue-dark)"/>
-  <ellipse cx="134" cy="88" rx="20" ry="9" fill="#334155"/>
-
-  <!-- cauda horizontal -->
-  <path d="M20,65 L42,60 L15,85 Z" fill="var(--azul-blue-dark)"/>
-
+<svg viewBox="0 0 400 110" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
   <!-- deriva (cauda vertical) -->
-  <path d="M45,45 L95,45 L58,6 Z" fill="var(--azul-blue)"/>
+  <path d="M70,39 L110,39 L80,5 Z" fill="#0b2a5b"/>
 
-  <!-- fuselagem -->
-  <path d="M20,60
-           C20,50 32,44 55,43
-           L235,43
-           C255,44 268,50 278,60
-           C268,70 255,76 235,77
-           L55,77
-           C32,76 20,70 20,60 Z"
-        fill="#f5f7fa" stroke="#c3cede" stroke-width="1.5"/>
+  <!-- asa principal -->
+  <path d="M180,71 L155,100 L230,71 Z" fill="#1f3a63"/>
+  <!-- motor sob a asa -->
+  <ellipse cx="195" cy="82" rx="16" ry="7" fill="#334155"/>
 
-  <!-- friso azul -->
-  <path d="M50,68 L232,68" stroke="var(--azul-blue)" stroke-width="4" stroke-linecap="round"/>
+  <!-- fuselagem + nariz num único contorno, bem alongada -->
+  <path d="M20,55
+           C20,44 35,38 60,37
+           L280,37
+           C310,38 340,42 385,55
+           C340,68 310,72 280,73
+           L60,73
+           C35,72 20,66 20,55 Z"
+        fill="#ffffff" stroke="#8ea0c2" stroke-width="2.5"/>
+
+  <!-- trem de pouso (por cima da asa, pra ficar visível) -->
+  <line x1="165" y1="73" x2="165" y2="88" stroke="#334155" stroke-width="3"/>
+  <circle cx="165" cy="92" r="5" fill="#334155"/>
+  <line x1="210" y1="73" x2="210" y2="88" stroke="#334155" stroke-width="3"/>
+  <circle cx="210" cy="92" r="5" fill="#334155"/>
+
+  <!-- friso verde -->
+  <path d="M65,63 L275,63" stroke="#2ea84a" stroke-width="4" stroke-linecap="round"/>
 
   <!-- janela da cabine -->
-  <ellipse cx="256" cy="57" rx="7" ry="5" fill="#1f3a63"/>
+  <ellipse cx="335" cy="53" rx="7" ry="5" fill="#0b2a5b"/>
 
-  <!-- janelas dos passageiros -->
-  <circle cx="76" cy="55" r="3" fill="#1f3a63"/>
-  <circle cx="94" cy="55" r="3" fill="#1f3a63"/>
-  <circle cx="112" cy="55" r="3" fill="#1f3a63"/>
-  <circle cx="130" cy="55" r="3" fill="#1f3a63"/>
-  <circle cx="148" cy="55" r="3" fill="#1f3a63"/>
-  <circle cx="166" cy="55" r="3" fill="#1f3a63"/>
-  <circle cx="184" cy="55" r="3" fill="#1f3a63"/>
-  <circle cx="202" cy="55" r="3" fill="#1f3a63"/>
-  <circle cx="220" cy="55" r="3" fill="#1f3a63"/>
+  <!-- janelas dos passageiros (dos dois lados da logomarca, sem sobrepor) -->
+  <circle cx="85" cy="48" r="2.8" fill="#0b2a5b"/>
+  <circle cx="100" cy="48" r="2.8" fill="#0b2a5b"/>
+  <circle cx="115" cy="48" r="2.8" fill="#0b2a5b"/>
+  <circle cx="130" cy="48" r="2.8" fill="#0b2a5b"/>
+  <circle cx="145" cy="48" r="2.8" fill="#0b2a5b"/>
+  <circle cx="252" cy="48" r="2.8" fill="#0b2a5b"/>
+  <circle cx="264" cy="48" r="2.8" fill="#0b2a5b"/>
+  <circle cx="276" cy="48" r="2.8" fill="#0b2a5b"/>
 
-  <!-- logomarca -->
-  <text x="175" y="65" text-anchor="middle" font-family="Poppins, sans-serif" font-weight="700" font-size="22" fill="var(--azul-blue)">azul</text>
+  <!-- logomarca — pré-espelhada quando o SVG inteiro for invertido via CSS
+       (avião de pouso), pra o texto continuar legível nos dois casos -->
+  {% if mirror_text %}
+  <g transform="translate(400,0) scale(-1,1)">
+    <text x="205" y="58" text-anchor="middle" font-family="Poppins, sans-serif" font-weight="700" font-style="italic" font-size="22" fill="#0b2a5b">azul</text>
+  </g>
+  {% else %}
+  <text x="205" y="58" text-anchor="middle" font-family="Poppins, sans-serif" font-weight="700" font-style="italic" font-size="22" fill="#0b2a5b">azul</text>
+  {% endif %}
 </svg>

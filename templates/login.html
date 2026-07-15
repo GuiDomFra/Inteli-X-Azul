@@ -193,8 +193,8 @@
 
 <div class="flight-scene" aria-hidden="true">
   <div class="runway-line"></div>
-  <span class="jet jet--takeoff"><span class="jet-flip">{% include "_plane_svg.html" %}</span></span>
-  <span class="jet jet--landing"><span class="jet-flip">{% include "_plane_svg.html" %}</span></span>
+  <span class="jet jet--takeoff"><span class="jet-flip">{% with mirror_text = False %}{% include "_plane_svg.html" %}{% endwith %}</span></span>
+  <span class="jet jet--landing"><span class="jet-flip">{% with mirror_text = True %}{% include "_plane_svg.html" %}{% endwith %}</span></span>
 </div>
 
 <div class="sky-decor" aria-hidden="true">
