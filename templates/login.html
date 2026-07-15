@@ -39,14 +39,15 @@
   .hero .plane {
     position: relative;
     display: inline-block;
-    width: 260px;
-    height: 104px;
+    font-size: 5rem;
     filter: drop-shadow(0 8px 18px rgba(0,61,166,0.35));
     animation: float 3.2s ease-in-out infinite;
   }
   @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(-3deg); }
-    50% { transform: translateY(-8px) rotate(3deg); }
+    /* -45deg de base cancela a inclinação diagonal padrão do emoji,
+       deixando o avião de lado (na horizontal) em vez de na diagonal */
+    0%, 100% { transform: translateY(0) rotate(-48deg); }
+    50% { transform: translateY(-8px) rotate(-42deg); }
   }
   .hero h1 {
     font-size: 1.9rem;
@@ -136,12 +137,11 @@
     position: absolute;
     left: 10%;
     bottom: 15%;
-    width: 580px;
-    height: 232px;
+    font-size: 6rem;
     opacity: 0;
-    filter: drop-shadow(0 14px 24px rgba(0,61,166,0.35));
+    filter: drop-shadow(0 14px 24px rgba(0,61,166,0.3));
   }
-  .flight-scene .jet-flip { display: block; width: 100%; height: 100%; }
+  .flight-scene .jet-flip { display: inline-block; }
   @media (prefers-color-scheme: dark) { .flight-scene .jet { filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); } }
   .jet--takeoff { animation: takeoff 10s cubic-bezier(.4,0,.6,1) infinite; }
   .jet--landing {
@@ -193,8 +193,8 @@
 
 <div class="flight-scene" aria-hidden="true">
   <div class="runway-line"></div>
-  <span class="jet jet--takeoff"><span class="jet-flip">{% with mirror_text = False %}{% include "_plane_svg.html" %}{% endwith %}</span></span>
-  <span class="jet jet--landing"><span class="jet-flip">{% with mirror_text = True %}{% include "_plane_svg.html" %}{% endwith %}</span></span>
+  <span class="jet jet--takeoff"><span class="jet-flip">✈️</span></span>
+  <span class="jet jet--landing"><span class="jet-flip">✈️</span></span>
 </div>
 
 <div class="sky-decor" aria-hidden="true">
@@ -209,7 +209,7 @@
   <div class="sun-glow" aria-hidden="true"></div>
   <div class="trail-wrap" aria-hidden="true">
     <svg viewBox="0 0 260 70"><path class="trail-path" d="M10,60 C 80,60 120,10 250,12"/></svg>
-    <span class="plane">{% include "_plane_svg.html" %}</span>
+    <span class="plane">✈️</span>
   </div>
   <h1>Parecer de Marca · Azul</h1>
   <p>Visão de marca antes de qualquer campanha ir para a mesa de aprovação — escolha sua vertical para começar.</p>
