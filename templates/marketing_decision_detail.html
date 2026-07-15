@@ -14,37 +14,37 @@
   .hero .meta { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.82rem; opacity: 0.95; }
   .hero .meta span { display: flex; align-items: center; gap: 0.3rem; }
 
-  .card { background: var(--card); border-radius: var(--radius-lg); padding: 1.75rem 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-soft); border: 1px solid rgba(16,24,64,0.05); }
-  .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .card { background: var(--card); border-radius: var(--radius-lg); padding: 1.75rem 2rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-soft); border: 1px solid var(--border); }
+  .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--accent-dark); text-decoration: none; font-weight: 600; font-size: 0.9rem; margin-bottom: 1.5rem; }
   .back-link:hover { text-decoration: underline; }
 
   .decision-header { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-bottom: 1rem; }
   .vertical-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
   .semaforo-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; text-transform: capitalize; }
-  .semaforo-badge.verde { background: #dcfce7; color: #166534; }
-  .semaforo-badge.amarelo { background: #fef3c7; color: #92400e; }
-  .semaforo-badge.vermelho { background: #fee2e2; color: #991b1b; }
+  .semaforo-badge.verde { background: color-mix(in srgb, var(--verde) 18%, var(--card)); color: var(--verde); }
+  .semaforo-badge.amarelo { background: color-mix(in srgb, var(--amarelo) 18%, var(--card)); color: var(--amarelo); }
+  .semaforo-badge.vermelho { background: color-mix(in srgb, var(--vermelho) 18%, var(--card)); color: var(--vermelho); }
   .decision-text { white-space: pre-wrap; line-height: 1.65; color: var(--text); font-size: 1rem; }
 
   .section-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 1.5rem 0 0.75rem; }
-  .risk-item, .suggestion-item { padding: 0.85rem 1rem; border-radius: 12px; background: #f8fafc; border-left: 4px solid var(--accent); margin-bottom: 0.6rem; }
+  .risk-item, .suggestion-item { padding: 0.85rem 1rem; border-radius: 12px; background: var(--chip-bg); border-left: 4px solid var(--accent); margin-bottom: 0.6rem; }
   .risk-item strong { color: var(--accent-dark); }
   .suggestion-item { border-left-color: var(--verde); }
   .suggestion-item::before { content: "💡 "; }
 
-  .comments-section { background: var(--card); border-radius: var(--radius-lg); padding: 1.75rem 2rem; box-shadow: var(--shadow-soft); border: 1px solid rgba(16,24,64,0.05); }
-  .comment { padding: 1rem 0; border-bottom: 1px solid #f1f5f9; }
+  .comments-section { background: var(--card); border-radius: var(--radius-lg); padding: 1.75rem 2rem; box-shadow: var(--shadow-soft); border: 1px solid var(--border); }
+  .comment { padding: 1rem 0; border-bottom: 1px solid var(--field-border); }
   .comment:last-child { border-bottom: none; }
   .comment-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; font-size: 0.85rem; }
   .comment-author { font-weight: 600; color: var(--text); }
-  .comment-role { font-size: 0.7rem; text-transform: uppercase; background: var(--accent-soft); color: var(--accent); padding: 0.15rem 0.5rem; border-radius: 999px; }
+  .comment-role { font-size: 0.7rem; text-transform: uppercase; background: var(--accent-soft); color: var(--accent-dark); padding: 0.15rem 0.5rem; border-radius: 999px; }
   .comment-time { color: var(--muted); font-size: 0.75rem; margin-left: auto; }
   .comment-content { line-height: 1.6; color: var(--text); }
 
-  .comment-form { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #f1f5f9; }
+  .comment-form { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--field-border); }
   .comment-form label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.88rem; color: var(--text); }
-  .comment-form textarea { width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 1rem; font-family: inherit; background: #fbfcfe; min-height: 100px; resize: vertical; }
-  .comment-form textarea:focus { outline: none; border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px var(--accent-soft); }
+  .comment-form textarea { width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid var(--field-border); border-radius: 12px; font-size: 1rem; font-family: inherit; background: var(--input-bg); color: var(--text); min-height: 100px; resize: vertical; }
+  .comment-form textarea:focus { outline: none; border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 4px var(--accent-soft); }
   .comment-form button { margin-top: 0.75rem; }
 </style>
 
@@ -67,7 +67,7 @@
   <div class="decision-header">
     {% for v in decision.vertical.split(',') if v %}
       {% if verticals[v] %}
-        <span class="vertical-badge" style="background: color-mix(in srgb, {{ verticals[v].cor }} 12%, white); color: {{ verticals[v].cor }};">
+        <span class="vertical-badge" style="background: color-mix(in srgb, {{ verticals[v].cor }} 14%, var(--card)); color: {{ verticals[v].cor }};">
           {{ verticals[v].icone }} {{ verticals[v].nome }}
         </span>
       {% else %}

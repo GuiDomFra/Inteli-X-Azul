@@ -23,32 +23,88 @@
     background: var(--card);
     border-radius: var(--radius-md);
     padding: 1.25rem 1.5rem;
-    border: 1px solid rgba(16,24,64,0.05);
+    border: 1px solid var(--border);
     box-shadow: var(--shadow-soft);
   }
   .stat-card .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.3rem; }
   .stat-card .value { font-size: 2rem; font-weight: 700; font-family: "Poppins", sans-serif; color: var(--accent); }
 
+  .filters-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem;
+    align-items: flex-end;
+  }
+  .filter-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .filter-group .filter-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .semaforo-filters { display: flex; gap: 0.4rem; }
+  .semaforo-filter-btn {
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--field-border);
+    background: var(--input-bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .semaforo-filter-btn.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); }
+  .vertical-filters { display: flex; flex-wrap: wrap; gap: 0.4rem; max-width: 420px; }
+  .vertical-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--field-border);
+    background: var(--input-bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .vertical-filter-chip.active { border-color: var(--v-cor, var(--accent)); background: var(--v-cor-soft, var(--accent-soft)); }
+  .search-input {
+    padding: 0.6rem 0.85rem;
+    border: 1.5px solid var(--field-border);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: var(--input-bg);
+    color: var(--text);
+    min-width: 220px;
+  }
+  .search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .clear-filters { background: none; border: none; color: var(--accent-dark); font-weight: 600; font-size: 0.82rem; cursor: pointer; text-decoration: underline; }
+
+  .results-count { font-size: 0.82rem; color: var(--muted); margin: 1rem 0 0.6rem; }
+
   .table-wrapper { overflow-x: auto; }
   table.decisions { width: 100%; border-collapse: collapse; }
-  table.decisions th, table.decisions td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
-  table.decisions th { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.72rem; color: var(--muted); background: #f8fafc; }
-  table.decisions tr:hover td { background: #f8fafc; }
-  table.decisions .vertical-cell { display: flex; align-items: center; gap: 0.4rem; }
-  table.decisions .vertical-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; background: #f1f5f9; }
+  table.decisions th, table.decisions td { padding: 0.9rem 1rem; text-align: left; border-bottom: 1px solid var(--field-border); font-size: 0.9rem; }
+  table.decisions th { font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.72rem; color: var(--muted); background: var(--chip-bg); }
+  table.decisions tbody tr { transition: background 0.12s ease; animation: item-in 0.35s ease both; }
+  @keyframes item-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  table.decisions tr:hover td { background: var(--chip-bg); }
+  table.decisions .vertical-cell { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  table.decisions .vertical-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; background: var(--chip-bg); }
   table.decisions .semaforo { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.7rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: capitalize; }
-  table.decisions .semaforo.verde { background: #dcfce7; color: #166534; }
-  table.decisions .semaforo.amarelo { background: #fef3c7; color: #92400e; }
-  table.decisions .semaforo.vermelho { background: #fee2e2; color: #991b1b; }
+  table.decisions .semaforo.verde { background: color-mix(in srgb, var(--verde) 18%, var(--card)); color: var(--verde); }
+  table.decisions .semaforo.amarelo { background: color-mix(in srgb, var(--amarelo) 18%, var(--card)); color: var(--amarelo); }
+  table.decisions .semaforo.vermelho { background: color-mix(in srgb, var(--vermelho) 18%, var(--card)); color: var(--vermelho); }
   table.decisions .semaforo:empty::before { content: "—"; color: var(--muted); }
   .no-data { text-align: center; padding: 3rem; color: var(--muted); }
-  .btn-link { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+  .btn-link { color: var(--accent-dark); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
   .btn-link:hover { text-decoration: underline; }
 </style>
 
 <div class="hero">
   <h1>📊 Dashboard de Marketing</h1>
-  <p>Visão consolidada de todos os pareceres de marca das verticais da Azul</p>
+  <p>Visão consolidada, filtrável, de todos os pareceres de marca das 6 verticais da Azul</p>
 </div>
 
 <div class="stats-grid">
@@ -58,21 +114,48 @@
   </div>
   <div class="stat-card">
     <div class="label">Verdes</div>
-    <div class="value" style="color: #16a34a;">{{ decisions|selectattr('semaforo', 'equalto', 'verde')|list|length }}</div>
+    <div class="value" style="color: var(--verde);">{{ decisions|selectattr('semaforo', 'equalto', 'verde')|list|length }}</div>
   </div>
   <div class="stat-card">
     <div class="label">Amarelos</div>
-    <div class="value" style="color: #d97706;">{{ decisions|selectattr('semaforo', 'equalto', 'amarelo')|list|length }}</div>
+    <div class="value" style="color: var(--amarelo);">{{ decisions|selectattr('semaforo', 'equalto', 'amarelo')|list|length }}</div>
   </div>
   <div class="stat-card">
     <div class="label">Vermelhos</div>
-    <div class="value" style="color: #dc2626;">{{ decisions|selectattr('semaforo', 'equalto', 'vermelho')|list|length }}</div>
+    <div class="value" style="color: var(--vermelho);">{{ decisions|selectattr('semaforo', 'equalto', 'vermelho')|list|length }}</div>
   </div>
 </div>
 
-<div class="card table-wrapper">
+<div class="card filters-card">
+  <div class="filter-group">
+    <span class="filter-label">Buscar</span>
+    <input type="text" id="search-input" class="search-input" placeholder="Buscar no texto da proposta…">
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Semáforo</span>
+    <div class="semaforo-filters" id="semaforo-filters">
+      <button type="button" class="semaforo-filter-btn active" data-semaforo="all">Todos</button>
+      <button type="button" class="semaforo-filter-btn" data-semaforo="verde">🟢 Verde</button>
+      <button type="button" class="semaforo-filter-btn" data-semaforo="amarelo">🟡 Amarelo</button>
+      <button type="button" class="semaforo-filter-btn" data-semaforo="vermelho">🔴 Vermelho</button>
+    </div>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Verticais</span>
+    <div class="vertical-filters" id="vertical-filters">
+      {% for vertical_id, info in verticals.items() %}
+      <button type="button" class="vertical-filter-chip" data-vertical="{{ vertical_id }}" style="--v-cor: {{ info.cor }}; --v-cor-soft: color-mix(in srgb, {{ info.cor }} 16%, var(--card));">{{ info.icone }} {{ info.nome }}</button>
+      {% endfor %}
+    </div>
+  </div>
+  <button type="button" class="clear-filters" id="clear-filters">Limpar filtros</button>
+</div>
+
+<div class="results-count" id="results-count"></div>
+
+<div class="card table-wrapper" style="margin-top:0;">
   {% if decisions %}
-  <table class="decisions">
+  <table class="decisions" id="decisions-table">
     <thead>
       <tr>
         <th>Data</th>
@@ -86,12 +169,12 @@
     </thead>
     <tbody>
       {% for d in decisions %}
-      <tr>
+      <tr data-semaforo="{{ d.semaforo or '' }}" data-verticals="{{ d.vertical }}" data-search="{{ d.decision_text|lower }}">
         <td>{{ d.created_at[:10] }} {{ d.created_at[11:16] }}</td>
         <td class="vertical-cell">
           {% for v in d.vertical.split(',') if v %}
             {% if verticals[v] %}
-              <span class="vertical-badge" style="background: color-mix(in srgb, {{ verticals[v].cor }} 12%, white); color: {{ verticals[v].cor }};">
+              <span class="vertical-badge" style="background: color-mix(in srgb, {{ verticals[v].cor }} 14%, var(--card)); color: {{ verticals[v].cor }};">
                 {{ verticals[v].icone }} {{ verticals[v].nome }}
               </span>
             {% else %}
@@ -109,11 +192,12 @@
         </td>
         <td>{{ d.publico_alvo or '—' }}</td>
         <td>{{ d.canal or '—' }}</td>
-        <td><a href="{{ url_for('web_app.marketing_decision_detail', decision_id=d.id) }}" class="btn-link">Ver & Comentar</a></td>
+        <td><a href="{{ url_for('web_app.marketing_decision_detail', decision_id=d.id) }}" class="btn-link">Ver &amp; Comentar</a></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  <p class="no-data" id="no-results" style="display:none;">Nenhum parecer bate com os filtros selecionados.</p>
   {% else %}
   <div class="no-data">
     <p style="font-size: 1.1rem;">Nenhum parecer registrado ainda.</p>
@@ -121,4 +205,79 @@
   </div>
   {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  var table = document.getElementById('decisions-table');
+  if (!table) return;
+
+  var rows = Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
+  var searchInput = document.getElementById('search-input');
+  var semaforoBtns = Array.prototype.slice.call(document.querySelectorAll('.semaforo-filter-btn'));
+  var verticalChips = Array.prototype.slice.call(document.querySelectorAll('.vertical-filter-chip'));
+  var resultsCount = document.getElementById('results-count');
+  var noResults = document.getElementById('no-results');
+  var clearBtn = document.getElementById('clear-filters');
+
+  var state = { semaforo: 'all', verticals: new Set(), search: '' };
+
+  function applyFilters() {
+    var visible = 0;
+    rows.forEach(function (row) {
+      var matchesSemaforo = state.semaforo === 'all' || row.dataset.semaforo === state.semaforo;
+      var rowVerticals = row.dataset.verticals.split(',').filter(Boolean);
+      var matchesVertical = state.verticals.size === 0 || rowVerticals.some(function (v) { return state.verticals.has(v); });
+      var matchesSearch = !state.search || row.dataset.search.indexOf(state.search) !== -1;
+      var show = matchesSemaforo && matchesVertical && matchesSearch;
+      row.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    resultsCount.textContent = 'Mostrando ' + visible + ' de ' + rows.length + ' pareceres';
+    noResults.style.display = visible === 0 ? '' : 'none';
+    table.style.display = visible === 0 ? 'none' : '';
+  }
+
+  searchInput.addEventListener('input', function () {
+    state.search = this.value.trim().toLowerCase();
+    applyFilters();
+  });
+
+  semaforoBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      semaforoBtns.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state.semaforo = btn.dataset.semaforo;
+      applyFilters();
+    });
+  });
+
+  verticalChips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var v = chip.dataset.vertical;
+      if (state.verticals.has(v)) {
+        state.verticals.delete(v);
+        chip.classList.remove('active');
+      } else {
+        state.verticals.add(v);
+        chip.classList.add('active');
+      }
+      applyFilters();
+    });
+  });
+
+  clearBtn.addEventListener('click', function () {
+    state.semaforo = 'all';
+    state.verticals.clear();
+    state.search = '';
+    searchInput.value = '';
+    semaforoBtns.forEach(function (b) { b.classList.toggle('active', b.dataset.semaforo === 'all'); });
+    verticalChips.forEach(function (c) { c.classList.remove('active'); });
+    applyFilters();
+  });
+
+  applyFilters();
+})();
+</script>
 {% endblock %}
