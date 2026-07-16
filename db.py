@@ -11,11 +11,10 @@ CREATE TABLE IF NOT EXISTS decisions (
     slack_user_id       TEXT NOT NULL,
     slack_message_ts    TEXT,
     decision_text       TEXT NOT NULL,
-publico_alvo        TEXT,
+    publico_alvo        TEXT,
     canal               TEXT,
     vertical            TEXT,
     importancia         TEXT,
-    estado              TEXT,
     riscos_json         TEXT,
     sugestoes_json      TEXT,
     raw_model_response  TEXT,
@@ -56,7 +55,6 @@ NEW_COLUMNS = {
     "canal": "TEXT",
     "vertical": "TEXT",
     "importancia": "TEXT",
-    "estado": "TEXT",
     "sugestoes_json": "TEXT",
     "word_count": "INTEGER",
     "word_count_exceeded": "INTEGER",
@@ -142,12 +140,6 @@ def get_comments(decision_id: int) -> list[sqlite3.Row]:
             WHERE decision_id = ?
             ORDER BY created_at ASC
         """, (decision_id,)))
-
-
-def delete_decision(decision_id: int) -> None:
-    """Apaga uma decisão e seus comentários (CASCADE)."""
-    with get_connection() as conn:
-        conn.execute("DELETE FROM decisions WHERE id = ?", (decision_id,))
 
 
 def delete_decision(decision_id: int) -> bool:
