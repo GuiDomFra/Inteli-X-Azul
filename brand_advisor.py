@@ -13,6 +13,19 @@ logger = logging.getLogger(__name__)
 MAX_REPORT_WORDS = 300
 NO_GUIDELINE_SENTINEL = "não há diretriz sobre isso"
 
+RISK_CATEGORIES = {
+    "seguranca": {"label": "Segurança Operacional", "cor": "#dc2626", "emoji": "🔴"},
+    "promessa_absoluta": {"label": "Promessa Absoluta", "cor": "#dc2626", "emoji": "🔴"},
+    "tom_low_cost": {"label": "Tom Low-Cost", "cor": "#dc2626", "emoji": "🔴"},
+    "concorrente": {"label": "Menção a Concorrente", "cor": "#dc2626", "emoji": "🔴"},
+    "exclusao": {"label": "Exclusão/Estereótipo", "cor": "#dc2626", "emoji": "🔴"},
+    "greenwashing": {"label": "Greenwashing/Meio Ambiente", "cor": "#dc2626", "emoji": "🔴"},
+    "tom_voz": {"label": "Tom de Voz", "cor": "#d97706", "emoji": "🟡"},
+    "posicionamento": {"label": "Posicionamento de Marca", "cor": "#d97706", "emoji": "🟡"},
+    "acessibilidade": {"label": "Acessibilidade/Clareza", "cor": "#d97706", "emoji": "🟡"},
+    "outro": {"label": "Outro Risco", "cor": "#d97706", "emoji": "🟡"},
+}
+
 BRAND_PARECER_SCHEMA = {
     "type": "object",
     "properties": {
@@ -35,11 +48,21 @@ BRAND_PARECER_SCHEMA = {
                         ),
                     },
                     "risco": {"type": "string", "description": "O risco em si, 1 frase curta."},
+                    "categoria": {
+                        "type": "string",
+                        "enum": list(RISK_CATEGORIES.keys()),
+                        "description": "Categoria do risco para indicador visual colorido.",
+                    },
+                    "severidade": {
+                        "type": "string",
+                        "enum": ["alto", "medio", "baixo"],
+                        "description": "Nível de severidade: alto=vermelho, medio=amarelo, baixo=verde.",
+                    },
                 },
-                "required": ["diretriz", "risco"],
+                "required": ["diretriz", "risco", "categoria", "severidade"],
                 "additionalProperties": False,
             },
-            "description": "No máximo 3 pontos de risco, cada um citando a diretriz afetada.",
+            "description": "No máximo 3 pontos de risco, cada um citando a diretriz afetada, categoria e severidade.",
         },
         "sugestoes": {
             "type": "array",
@@ -123,6 +146,30 @@ Regras invioláveis:
     considere as diretrizes de todas elas ao apontar riscos e garanta que
     cada sugestão funcione para todas as verticais envolvidas, não só para
     uma.
+
+12. Para cada risco identificado, classifique-o em uma **categoria** e atribua
+    uma **severidade**:
+
+    **Categorias de risco (use exatamente estes IDs):**
+    - `seguranca`: Segurança operacional (ex.: prometer segurança absoluta, usar segurança como marketing)
+    - `promessa_absoluta`: Promessa incondicional de pontualidade, entrega, disponibilidade ou upgrade
+    - `tom_low_cost`: Linguagem de empresa barata/low-cost, foco em preço baixo como argumento central
+    - `concorrente`: Citar ou atacar concorrentes nominalmente (GOL, LATAM, etc.)
+    - `exclusao`: Comunicação que exclui ou estereotipa grupos de pessoas
+    - `greenwashing`: Alegação ambiental sem lastro verificável, neutralidade de carbono incondicional
+    - `tom_voz`: Desvio do tom caloroso, brasileiro, acessível (ex.: corporativo, frio, jargão técnico)
+    - `posicionamento`: Desalinhamento com "melhor experiência de voo do Brasil", malha doméstica, humanização
+    - `acessibilidade`: Falta de clareza, jargão sem explicação, informação confusa para o cliente
+    - `outro`: Risco real não coberto pelas categorias acima
+
+    **Severidade (use exatamente):**
+    - `alto` → 🔴 **bolinha vermelha** — violação direta de diretriz proibida (regras 6, 7, 8, 9, 10, 11, 12 do brandbook)
+    - `medio` → 🟡 **bolinha amarela** — desvio de tom/posicionamento, risco menor sem proibição explícita
+    - `baixo` → 🟢 **bolinha verde** — alinhado ou observação leve sem impacto material
+
+    O campo `categoria` determina a cor/base do indicador; o campo `severidade` confirma o nível.
+    Riscos `alto` sempre puxam o estado geral para "vermelho"; riscos `medio` para "amarelo".
+    Se só houver riscos `baixo` ou lista vazia, estado = "verde".
 
 Diretrizes de marca (fonte de verdade):
 <brand_guidelines>

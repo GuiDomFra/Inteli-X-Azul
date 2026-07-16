@@ -33,6 +33,9 @@
   .section-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 1.5rem 0 0.75rem; }
   .risk-item, .suggestion-item { padding: 0.85rem 1rem; border-radius: 12px; background: var(--chip-bg); border-left: 4px solid var(--accent); margin-bottom: 0.6rem; }
   .risk-item strong { color: var(--accent-dark); }
+  .risk-item .risk-meta { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem; }
+  .risk-dot { font-size: 0.9rem; }
+  .risk-category { font-size: 0.65rem; text-transform: uppercase; font-weight: 600; color: var(--muted); }
   .suggestion-item { border-left-color: var(--verde); }
   .suggestion-item::before { content: "💡 "; }
 
@@ -113,8 +116,16 @@
   {% set riscos = decision.riscos_json|from_json %}
   {% for r in riscos %}
   <div class="risk-item">
-    <strong>{{ r.diretriz }}</strong><br>
-    <span style="margin-top:0.3rem; display:block;">{{ r.risco }}</span>
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
+      {% set cat = r.get('categoria', 'outro') %}
+      {% set sev = r.get('severidade', 'baixo') %}
+      {% if sev == 'alto' %}<span class="risk-dot" style="color: var(--vermelho);" title="Alto risco">🔴</span>
+      {% elif sev == 'medio' %}<span class="risk-dot" style="color: var(--amarelo);" title="Médio risco">🟡</span>
+      {% else %}<span class="risk-dot" style="color: var(--verde);" title="Baixo risco">🟢</span>{% endif %}
+      <span class="risk-category" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 600; color: var(--muted);">{{ cat.replace('_', ' ') }}</span>
+      <strong style="margin-left: auto;">{{ r.diretriz }}</strong>
+    </div>
+    <span style="display:block;">{{ r.risco }}</span>
   </div>
   {% endfor %}
 </div>

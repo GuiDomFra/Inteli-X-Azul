@@ -259,15 +259,26 @@
         {% endif %}
 
         <div class="section-label">Pontos de risco</div>
-        {% if parecer.riscos %}
+{% if parecer.riscos %}
           <div>
           {% for r in parecer.riscos %}
-          <div class="risk-item"><strong>{{ r.diretriz }}</strong> — {{ r.risco }}</div>
+          {% set sev = r.get('severidade', 'baixo') %}
+          {% set cat = r.get('categoria', 'outro') %}
+          <div class="risk-item" style="display: flex; flex-direction: column; gap: 0.2rem;">
+            <div style="display: flex; align-items: center; gap: 0.4rem;">
+              {% if sev == 'alto' %}<span class="risk-dot" style="color: var(--vermelho);" title="Alto risco">🔴</span>
+              {% elif sev == 'medio' %}<span class="risk-dot" style="color: var(--amarelo);" title="Médio risco">🟡</span>
+              {% else %}<span class="risk-dot" style="color: var(--verde);" title="Baixo risco">🟢</span>{% endif %}
+              <span class="risk-category" style="font-size: 0.65rem; text-transform: uppercase; font-weight: 600; color: var(--muted);">{{ cat.replace('_', ' ') }}</span>
+              <strong style="margin-left: auto;">{{ r.diretriz }}</strong>
+            </div>
+            <span style="margin-left: 1.6rem;">{{ r.risco }}</span>
+          </div>
           {% endfor %}
           </div>
-        {% else %}
+{% else %}
           <p class="muted">Nenhum risco de marca identificado.</p>
-        {% endif %}
+{% endif %}
 
         <div class="perforation" aria-hidden="true"></div>
 
