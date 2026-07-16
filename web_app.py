@@ -26,6 +26,38 @@ def get_connection() -> sqlite3.Connection:
     return sqlite3.connect(DB_PATH)
 
 
+def _build_ai_comment(parecer: dict, vertical_ids: list[str]) -> str:
+    """Gera um comentário discreto da IA Azul alinhado aos valores da marca."""
+    estado = parecer.get("estado", "verde")
+    riscos = parecer.get("riscos", [])
+    sugestoes = parecer.get("sugestoes", [])
+    vertical_names = [VERTICALS[v]["nome"] for v in vertical_ids if v in VERTICALS]
+
+    emoji_map = {"verde": "🟢", "amarelo": "🟡", "vermelho": "🔴"}
+    emoji = emoji_map.get(estado, "🟢")
+
+    if estado == "verde":
+        base = f"{emoji} **Análise automática da IA Azul** — A proposta está alinhada com nossos valores e posicionamento."
+    elif estado == "amarelo":
+        base = f"{emoji} **Análise automática da IA Azul** — A proposta tem pontos de atenção no tom ou posicionamento, sem violar diretrizes proibidas."
+    else:
+        base = f"{emoji} **Análise automática da IA Azul** — Identificamos conflito com diretrizes da marca que precisam de revisão."
+
+    if vertical_names:
+        base += f" (Verticais: {', '.join(vertical_names)})"
+
+    if riscos:
+        risco_textos = [f"• {r.get('risco', '')}" for r in riscos[:2]]
+        base += "\n\n⚠️ **Principais riscos:**\n" + "\n".join(risco_textos)
+
+    if sugestoes:
+        sugestao_textos = [f"• {s}" for s in sugestoes[:2]]
+        base += "\n\n💡 **Sugestões de ajuste:**\n" + "\n".join(sugestao_textos)
+
+    base += "\n\n---\n*Este é um parecer automático da IA Azul. A decisão final cabe ao time de Marketing.*"
+    return base
+
+
 web_app = Blueprint("web_app", __name__)
 
 _BRANDBOOK_ERROR_MESSAGES = {
@@ -143,7 +175,7 @@ def painel():
                         error=str(exc),
                     )
                 else:
-                    insert_decision(
+                    decision_id = insert_decision(
                         slack_user_id=f"web:{vertical['id']}",
                         decision_text=decision_text,
                         publico_alvo=publico_alvo or None,
@@ -158,6 +190,14 @@ def painel():
                         latency_ms=parecer.get("_latency_ms"),
                         word_count=parecer.get("_word_count"),
                         word_count_exceeded=int(parecer.get("_word_count", 0) > 300),
+                    )
+                    # Insere comentário automático da IA Azul
+                    ai_comment = _build_ai_comment(parecer, selected_verticals)
+                    insert_comment(
+                        decision_id=decision_id,
+                        author_role="ia_azul",
+                        author_name="IA Azul",
+                        content=ai_comment,
                     )
 
     return render_template(
