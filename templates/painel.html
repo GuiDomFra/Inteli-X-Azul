@@ -234,11 +234,11 @@
     'amarelo': ('🟡', 'Atenção necessária'),
     'vermelho': ('🔴', 'Conflito com o brandbook'),
   } %}
-  {% set emoji, label = semaforo_info.get(parecer.semaforo, ('', parecer.semaforo)) %}
+  {% set emoji, label = semaforo_info.get(parecer.estado, ('', parecer.estado)) %}
   <div class="boarding-pass">
     <div class="stub-row">
       <div class="stub-main">
-        <div class="semaforo-hero {{ parecer.semaforo }}">
+        <div class="semaforo-hero {{ parecer.estado }}">
           <div class="dot">{{ emoji }}</div>
           <div>
             <h2>{{ label }}</h2>
@@ -288,7 +288,7 @@
         </div>
         <p class="muted" style="margin-top:0.6rem;">Modelo {{ parecer._model_id }}</p>
       </div>
-      <div class="stub-side {{ parecer.semaforo }}">
+      <div class="stub-side {{ parecer.estado }}">
         <span class="stub-code">Nº {{ '%03d' | format(parecer._word_count) }}</span>
         <span>PARECER · AZUL</span>
         <span class="stub-emoji">{{ emoji }}</span>

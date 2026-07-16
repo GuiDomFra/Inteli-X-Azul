@@ -95,7 +95,7 @@
     </div>
     <div class="stat-card">
       <div class="label">Vermelhas</div>
-      <div class="value" style="color: var(--vermelho);">{{ semaforo_counts.vermelho }}</div>
+      <div class="value" style="color: var(--vermelho);">{{ estado_counts.vermelho }}</div>
     </div>
   </div>
 
@@ -103,7 +103,7 @@
     {% set semaforo_emoji = {'verde': '🟢', 'amarelo': '🟡', 'vermelho': '🔴'} %}
     {% for d in decisions %}
     <div class="history-item">
-      <span class="semaforo-dot">{{ semaforo_emoji.get(d.semaforo, '⚪') }}</span>
+      <span class="semaforo-dot">{{ semaforo_emoji.get(d.estado, '⚪') }}</span>
       <div class="text">
         <div class="decision-snippet">{{ d.decision_text[:160] }}{% if d.decision_text|length > 160 %}…{% endif %}</div>
         <div class="meta">

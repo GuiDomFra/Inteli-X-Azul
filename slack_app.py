@@ -108,7 +108,7 @@ def handle_parecer(body, client, logger):
         publico_alvo=extra.get("publico_alvo"),
         canal=extra.get("canal"),
         model_id=parecer.get("_model_id"),
-        semaforo=parecer["semaforo"],
+        estado=parecer["estado"],
         riscos_json=json.dumps(parecer["riscos"], ensure_ascii=False),
         sugestoes_json=json.dumps(parecer["sugestoes"], ensure_ascii=False),
         raw_model_response=parecer.get("_raw"),

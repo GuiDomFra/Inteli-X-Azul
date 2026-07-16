@@ -2,8 +2,8 @@ import time
 
 from brand_advisor import NO_GUIDELINE_SENTINEL
 
-SEMAFORO_EMOJI = {"verde": "🟢", "amarelo": "🟡", "vermelho": "🔴"}
-SEMAFORO_LABEL = {"verde": "Alinhado", "amarelo": "Atenção", "vermelho": "Conflito"}
+ESTADO_EMOJI = {"verde": "🟢", "amarelo": "🟡", "vermelho": "🔴"}
+ESTADO_LABEL = {"verde": "Alinhado", "amarelo": "Atenção", "vermelho": "Conflito"}
 
 # Cor de marca da Azul usada na barra lateral do attachment do Slack.
 # TODO: valor ainda não confirmado com o time de marca da Azul — ajustar
@@ -23,8 +23,8 @@ def _format_risco(risco: dict) -> str:
 
 
 def format_slack_blocks(parecer: dict) -> list:
-    emoji = SEMAFORO_EMOJI.get(parecer["semaforo"], "")
-    label = SEMAFORO_LABEL.get(parecer["semaforo"], parecer["semaforo"])
+    emoji = ESTADO_EMOJI.get(parecer["estado"], "")
+    label = ESTADO_LABEL.get(parecer["estado"], parecer["estado"])
     riscos = "\n".join(_format_risco(r) for r in parecer["riscos"]) or "Nenhum risco de marca identificado."
     sugestoes = "\n".join(f"• {s}" for s in parecer["sugestoes"]) or "—"
 
@@ -64,6 +64,6 @@ def format_slack_attachment(parecer: dict) -> dict:
 
 
 def format_fallback_text(parecer: dict) -> str:
-    label = SEMAFORO_LABEL.get(parecer["semaforo"], parecer["semaforo"])
+    label = ESTADO_LABEL.get(parecer["estado"], parecer["estado"])
     n = len(parecer["riscos"])
     return f"✈️ Tucano (Azul) — {label} ({n} risco(s) identificado(s))."

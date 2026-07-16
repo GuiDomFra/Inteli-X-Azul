@@ -22,13 +22,13 @@ def _fake_response(parecer_dict, stop_reason="end_turn", model="claude-opus-4-8"
 
 def test_get_brand_parecer_happy_path():
     fake = {
-        "semaforo": "amarelo",
+        "estado": "amarelo",
         "riscos": [{"diretriz": "tom_low_cost", "risco": "Menção a preço baixo."}],
         "sugestoes": ["Focar na experiência em vez do preço."],
     }
     with patch("brand_advisor.client.messages.create", return_value=_fake_response(fake)):
         result = get_brand_parecer("Renomear produto X para Y", "diretrizes de teste")
-    assert result["semaforo"] == "amarelo"
+    assert result["estado"] == "amarelo"
     assert result["riscos"] == fake["riscos"]
     assert result["sugestoes"] == fake["sugestoes"]
     assert result["_model_id"] == "claude-opus-4-8"
@@ -61,7 +61,7 @@ def test_get_brand_parecer_wraps_connection_errors():
 
 def test_get_brand_parecer_truncates_to_three_items():
     fake = {
-        "semaforo": "vermelho",
+        "estado": "vermelho",
         "riscos": [{"diretriz": f"d{i}", "risco": f"r{i}"} for i in range(5)],
         "sugestoes": [f"s{i}" for i in range(5)],
     }
@@ -73,7 +73,7 @@ def test_get_brand_parecer_truncates_to_three_items():
 
 def test_get_brand_parecer_annotates_word_count():
     fake = {
-        "semaforo": "verde",
+        "estado": "verde",
         "riscos": [],
         "sugestoes": ["uma sugestão " * 50],
     }

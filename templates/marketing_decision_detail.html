@@ -61,8 +61,8 @@
     <span>👤 {{ decision.slack_user_id }}</span>
     {% if decision.publico_alvo %}<span>🎯 {{ decision.publico_alvo }}</span>{% endif %}
     {% if decision.canal %}<span>📢 {{ decision.canal }}</span>{% endif %}
-    {% if decision.semaforo %}
-      <span class="semaforo-badge {{ decision.semaforo }}">{{ decision.semaforo }}</span>
+    {% if decision.estado %}
+      <span class="semaforo-badge {{ decision.estado }}">{{ decision.estado }}</span>
     {% endif %}
     {% if decision.importancia and importance_levels[decision.importancia] %}
       <span class="importancia-badge">{{ importance_levels[decision.importancia].icone }} Importância {{ importance_levels[decision.importancia].label }}</span>
@@ -89,8 +89,8 @@
         <span class="vertical-badge">{{ v }}</span>
       {% endif %}
     {% endfor %}
-    {% if decision.semaforo %}
-      <span class="semaforo-badge {{ decision.semaforo }}">{{ decision.semaforo }}</span>
+    {% if decision.estado %}
+      <span class="semaforo-badge {{ decision.estado }}">{{ decision.estado }}</span>
     {% endif %}
     {% if decision.importancia and importance_levels[decision.importancia] %}
       <span class="importancia-badge">{{ importance_levels[decision.importancia].icone }} Importância {{ importance_levels[decision.importancia].label }}</span>

@@ -121,6 +121,9 @@
   .no-data { text-align: center; padding: 3rem; color: var(--muted); }
   .btn-link { color: var(--accent-dark); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
   .btn-link:hover { text-decoration: underline; }
+  .action-cell { display: flex; align-items: center; gap: 0.75rem; }
+  .btn-delete { background: none; border: none; color: var(--vermelho); font-weight: 600; font-size: 0.85rem; cursor: pointer; padding: 0; font-family: inherit; }
+  .btn-delete:hover { text-decoration: underline; }
 </style>
 
 <div class="hero">
@@ -150,7 +153,7 @@
   </div>
   <div class="stat-card">
     <div class="label">Vermelhos</div>
-    <div class="value" style="color: var(--vermelho);">{{ decisions|selectattr('semaforo', 'equalto', 'vermelho')|list|length }}</div>
+    <div class="value" style="color: var(--vermelho);">{{ decisions|selectattr('estado', 'equalto', 'vermelho')|list|length }}</div>
   </div>
 </div>
 
@@ -216,7 +219,7 @@
     </thead>
     <tbody>
       {% for d in decisions %}
-      <tr data-semaforo="{{ d.semaforo or '' }}" data-importancia="{{ d.importancia or '' }}" data-status="{{ 'reviewed' if d.reviewed else 'pending' }}" data-verticals="{{ d.vertical }}" data-search="{{ d.decision_text|lower }}">
+      <tr data-semaforo="{{ d.estado or '' }}" data-importancia="{{ d.importancia or '' }}" data-status="{{ 'reviewed' if d.reviewed else 'pending' }}" data-verticals="{{ d.vertical }}" data-search="{{ d.decision_text|lower }}">
         <td>{{ d.created_at[:10] }} {{ d.created_at[11:16] }}</td>
         <td class="vertical-cell">
           {% for v in d.vertical.split(',') if v %}
@@ -231,8 +234,8 @@
         </td>
         <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d.decision_text[:120] }}{% if d.decision_text|length > 120 %}…{% endif %}</td>
         <td>
-          {% if d.semaforo %}
-            <span class="semaforo {{ d.semaforo }}">{{ d.semaforo }}</span>
+          {% if d.estado %}
+            <span class="semaforo {{ d.estado }}">{{ d.estado }}</span>
           {% else %}
             <span class="semaforo">—</span>
           {% endif %}
@@ -253,7 +256,12 @@
         </td>
         <td>{{ d.publico_alvo or '—' }}</td>
         <td>{{ d.canal or '—' }}</td>
-        <td><a href="{{ url_for('web_app.marketing_decision_detail', decision_id=d.id) }}" class="btn-link">Ver &amp; Comentar</a></td>
+        <td class="action-cell">
+          <a href="{{ url_for('web_app.marketing_decision_detail', decision_id=d.id) }}" class="btn-link">Ver &amp; Comentar</a>
+          <form method="post" action="{{ url_for('web_app.marketing_delete_decision', decision_id=d.id) }}" onsubmit="return confirm('Apagar este parecer? Essa ação não pode ser desfeita.');">
+            <button type="submit" class="btn-delete">🗑 Apagar</button>
+          </form>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

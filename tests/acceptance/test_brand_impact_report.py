@@ -50,7 +50,7 @@ def test_three_known_violations_are_identified_as_red():
     guidelines_text = load_brand_guidelines_text()
     parecer = get_brand_parecer(TEST_BRIEFING, guidelines_text)
 
-    assert parecer["semaforo"] == "vermelho"
+    assert parecer["estado"] == "vermelho"
     assert len(parecer["riscos"]) == 3
 
     combined_per_risk = [_normalize(r["diretriz"] + " " + r["risco"]) for r in parecer["riscos"]]
