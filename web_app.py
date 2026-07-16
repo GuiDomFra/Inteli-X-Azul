@@ -7,6 +7,7 @@ from auth import authenticate
 from brand_advisor import BrandAdvisorError, get_brand_parecer, load_brand_guidelines_text
 from config import DB_PATH
 from db import (
+    delete_decision,
     get_all_decisions,
     get_comments,
     get_decisions_by_vertical,
@@ -148,7 +149,7 @@ def painel():
                         vertical=vertical_tag,
                         importancia=importancia,
                         model_id=parecer.get("_model_id"),
-                        semaforo=parecer["semaforo"],
+                        estado=parecer["estado"],
                         riscos_json=json.dumps(parecer["riscos"], ensure_ascii=False),
                         sugestoes_json=json.dumps(parecer["sugestoes"], ensure_ascii=False),
                         raw_model_response=parecer.get("_raw"),
@@ -184,10 +185,10 @@ def painel_historico():
     decisions = get_decisions_by_vertical(vertical["id"])
     total = len(decisions)
     reviewed_count = sum(1 for d in decisions if d["reviewed"])
-    semaforo_counts = {
-        "verde": sum(1 for d in decisions if d["semaforo"] == "verde"),
-        "amarelo": sum(1 for d in decisions if d["semaforo"] == "amarelo"),
-        "vermelho": sum(1 for d in decisions if d["semaforo"] == "vermelho"),
+    estado_counts = {
+        "verde": sum(1 for d in decisions if d["estado"] == "verde"),
+        "amarelo": sum(1 for d in decisions if d["estado"] == "amarelo"),
+        "vermelho": sum(1 for d in decisions if d["estado"] == "vermelho"),
     }
     return render_template(
         "painel_historico.html",
@@ -196,7 +197,7 @@ def painel_historico():
         decisions=decisions,
         total=total,
         reviewed_count=reviewed_count,
-        semaforo_counts=semaforo_counts,
+        estado_counts=estado_counts,
         importance_levels=IMPORTANCE_LEVELS,
     )
 
@@ -263,3 +264,14 @@ def marketing_mark_reviewed(decision_id: int):
 
     mark_reviewed(decision_id)
     return redirect(url_for("web_app.marketing_decision_detail", decision_id=decision_id))
+
+
+@web_app.route("/marketing/decision/<int:decision_id>/apagar", methods=["POST"])
+def marketing_delete_decision(decision_id: int):
+    """Apaga uma decisão (apenas marketing)."""
+    user = _current_user()
+    if not user or user["role"] != "marketing":
+        return redirect(url_for("web_app.login"))
+
+    delete_decision(decision_id)
+    return redirect(url_for("web_app.marketing_dashboard"))

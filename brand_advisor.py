@@ -16,7 +16,7 @@ NO_GUIDELINE_SENTINEL = "não há diretriz sobre isso"
 BRAND_PARECER_SCHEMA = {
     "type": "object",
     "properties": {
-        "semaforo": {
+        "estado": {
             "type": "string",
             "enum": ["verde", "amarelo", "vermelho"],
             "description": "verde=alinhado, amarelo=atenção, vermelho=conflito com o brandbook.",
@@ -47,7 +47,7 @@ BRAND_PARECER_SCHEMA = {
             "description": "No máximo 3 sugestões de ajuste para resolver os conflitos.",
         },
     },
-    "required": ["semaforo", "riscos", "sugestoes"],
+    "required": ["estado", "riscos", "sugestoes"],
     "additionalProperties": False,
 }
 
@@ -64,7 +64,7 @@ público-alvo e canal da campanha.
 Regras invioláveis:
 
 1. Você NUNCA aprova nem reprova uma proposta. Você apenas informa riscos de
-   marca através do semáforo e das listas abaixo. A decisão final é sempre
+   marca através do estado e das listas abaixo. A decisão final é sempre
    humana — isso é estrutural, não opcional.
 
 2. Baseie-se exclusivamente nas diretrizes de marca fornecidas em
@@ -85,10 +85,10 @@ Regras invioláveis:
 
 5. No máximo 3 itens em "riscos" e no máximo 3 itens em "sugestoes". Se
    houver mais conflitos genuínos, mantenha só os 3 mais graves/claros. Se
-   nada conflita, "riscos" pode ser uma lista vazia e o semáforo deve ser
+   nada conflita, "riscos" pode ser uma lista vazia e o estado deve ser
    "verde".
 
-6. Calibre o semáforo assim: "vermelho" = conflito direto com uma diretriz
+6. Calibre o estado assim: "vermelho" = conflito direto com uma diretriz
    proibida explícita (ex.: tom low-cost, promessa de pontualidade absoluta,
    citar concorrente nominalmente); "amarelo" = desvio de tom/posicionamento
    ou risco menor, sem violar uma proibição explícita; "verde" = alinhado ou
