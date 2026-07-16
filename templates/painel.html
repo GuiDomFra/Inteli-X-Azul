@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ vertical.nome }} · Parecer de Marca{% endblock %}
+{% block title %}{{ vertical.nome }} · Tucano{% endblock %}
 {% block body %}
 <style>
   .risk-item, .suggestion-item {
@@ -168,7 +168,7 @@
 <header class="topbar">
   <div class="brand">
     <span class="badge-icon">{{ vertical.icone }}</span>
-    {{ vertical.nome }} · Parecer de Marca
+    {{ vertical.nome }} · Tucano
   </div>
   <form method="post" action="{{ url_for('web_app.logout') }}">
     <button type="submit" class="logout">Sair</button>

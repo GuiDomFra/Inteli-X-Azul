@@ -1,10 +1,10 @@
 # Tucano
 
-Agente de IA que dá um **parecer de impacto de marca** para a Azul **antes**
-que uma proposta (campanha de destino, promoção TudoAzul, parceria da Azul
-Viagens, comunicação da Azul Cargo...) seja finalizada. O agente nunca aprova
-nem reprova — só informa riscos; a decisão final é sempre humana. Duas
-interfaces, um só "cérebro" (`brand_advisor.py`):
+**Tucano** é o agente de IA que dá um **parecer de impacto de marca** para a
+Azul **antes** que uma proposta (campanha de destino, promoção TudoAzul,
+parceria da Azul Viagens, comunicação da Azul Cargo...) seja finalizada. O
+Tucano nunca aprova nem reprova — só informa riscos; a decisão final é sempre
+humana. Duas interfaces, um só "cérebro" (`brand_advisor.py`):
 
 - **Slack** (`/parecer-marca`) — uso rápido em qualquer canal, sem login,
   não associado a uma vertical específica.

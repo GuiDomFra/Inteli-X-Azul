@@ -55,7 +55,7 @@
 <a href="{{ url_for('web_app.marketing_dashboard') }}" class="back-link">← Voltar ao Dashboard</a>
 
 <div class="hero">
-  <h1>{{ verticals[decision.vertical.split(',')[0]].nome if decision.vertical.split(',')[0] in verticals else decision.vertical.split(',')[0] }} · Parecer de Marca</h1>
+  <h1>{{ verticals[decision.vertical.split(',')[0]].nome if decision.vertical.split(',')[0] in verticals else decision.vertical.split(',')[0] }} · Tucano</h1>
   <div class="meta">
     <span>📅 {{ decision.created_at[:16].replace('T', ' ') }}</span>
     <span>👤 {{ decision.slack_user_id }}</span>

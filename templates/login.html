@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Login · Parecer de Marca Azul{% endblock %}
+{% block title %}Login · Tucano{% endblock %}
 {% block body %}
 <style>
   .hero {
@@ -216,6 +216,40 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .jet--takeoff, .jet--landing { animation: none; opacity: 0; }
+    .speech-bubble { animation: none !important; opacity: 0 !important; }
+  }
+
+  /* Balãozinho de "wiiiiiiiiii" acompanhando o avião na decolagem */
+  .speech-bubble {
+    position: absolute;
+    top: -0.6rem;
+    left: 60%;
+    font-family: "Poppins", sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--azul-blue);
+    background: #fff;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    opacity: 0;
+    transform-origin: bottom left;
+    animation: bubble-pop 10s ease-in-out infinite;
+  }
+  .speech-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 18px;
+    width: 9px; height: 9px;
+    background: #fff;
+    transform: rotate(45deg);
+  }
+  @keyframes bubble-pop {
+    0%, 14% { opacity: 0; transform: scale(0.4); }
+    18%, 42% { opacity: 1; transform: scale(1); }
+    48%, 100% { opacity: 0; transform: scale(0.4); }
   }
 
   .sky-decor {
@@ -238,7 +272,10 @@
 
 <div class="flight-scene" aria-hidden="true">
   <div class="runway-line"></div>
-  <span class="jet jet--takeoff"><span class="jet-flip">✈️</span></span>
+  <span class="jet jet--takeoff">
+    <span class="jet-flip">✈️</span>
+    <span class="speech-bubble">wiiiiiiiiii</span>
+  </span>
   <span class="jet jet--landing"><span class="jet-flip">✈️</span></span>
 </div>
 
@@ -256,10 +293,11 @@
     <svg viewBox="0 0 260 70"><path class="trail-path" d="M10,60 C 80,60 120,10 250,12"/></svg>
     <span class="plane">✈️</span>
   </div>
-  <h1>Parecer de Marca · Azul</h1>
-  <p>A ponte entre as verticais da Azul e o marketing: cada vertical descreve a
-  proposta, a IA sinaliza os riscos de marca, e tudo chega organizado para o
-  marketing revisar e comentar — antes que a campanha esteja pronta.</p>
+  <h1>Tucano</h1>
+  <p>O assistente de parecer de marca da Azul — a ponte entre as verticais e o
+  marketing: cada vertical descreve a proposta, o Tucano sinaliza os riscos de
+  marca, e tudo chega organizado para o marketing revisar e comentar — antes
+  que a campanha esteja pronta.</p>
   <div class="runway" aria-hidden="true"></div>
 </div>
 

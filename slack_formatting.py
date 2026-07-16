@@ -10,7 +10,7 @@ SEMAFORO_LABEL = {"verde": "Alinhado", "amarelo": "Atenção", "vermelho": "Conf
 # para o hex exato do guia de identidade visual assim que disponível.
 AZUL_BLUE = "#003DA6"
 
-BRAND_FOOTER = "✈️ Azul Linhas Aéreas · Parecer de Marca automático"
+BRAND_FOOTER = "✈️ Azul Linhas Aéreas · Tucano (parecer de marca automático)"
 
 DISCLAIMER = "Este parecer é informativo — a decisão final é sempre da equipe de marca."
 
@@ -29,10 +29,10 @@ def format_slack_blocks(parecer: dict) -> list:
     sugestoes = "\n".join(f"• {s}" for s in parecer["sugestoes"]) or "—"
 
     return [
-        {"type": "header", "text": {"type": "plain_text", "text": f"{emoji} Parecer de Marca"}},
+        {"type": "header", "text": {"type": "plain_text", "text": f"{emoji} Tucano · Parecer de Marca"}},
         {
             "type": "context",
-            "elements": [{"type": "mrkdwn", "text": "✈️ *Azul Linhas Aéreas* · Parecer de Marca"}],
+            "elements": [{"type": "mrkdwn", "text": "✈️ *Azul Linhas Aéreas* · Tucano"}],
         },
         {
             "type": "section",
@@ -66,4 +66,4 @@ def format_slack_attachment(parecer: dict) -> dict:
 def format_fallback_text(parecer: dict) -> str:
     label = SEMAFORO_LABEL.get(parecer["semaforo"], parecer["semaforo"])
     n = len(parecer["riscos"])
-    return f"✈️ Parecer de Marca (Azul) — {label} ({n} risco(s) identificado(s))."
+    return f"✈️ Tucano (Azul) — {label} ({n} risco(s) identificado(s))."

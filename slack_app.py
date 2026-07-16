@@ -96,7 +96,7 @@ def handle_parecer(body, client, logger):
         channel=channel_id,
         attachments=[format_slack_attachment(parecer)],
         text=format_fallback_text(parecer),
-        username="Parecer de Marca · Azul",
+        username="Tucano · Azul",
         icon_emoji=":airplane:",
     )
     insert_decision(
