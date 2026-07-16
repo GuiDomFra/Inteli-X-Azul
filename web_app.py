@@ -7,13 +7,15 @@ from auth import authenticate
 from brand_advisor import BrandAdvisorError, get_brand_parecer, load_brand_guidelines_text
 from config import DB_PATH
 from db import (
-    delete_decision,
+    archive_decision,
     get_all_decisions,
+    get_archived_decisions,
     get_comments,
     get_decisions_by_vertical,
     insert_comment,
     insert_decision,
     mark_reviewed,
+    unarchive_decision,
 )
 from importance import DEFAULT_IMPORTANCE, IMPORTANCE_LEVELS, sort_weight
 from verticals import VERTICALS, get_vertical
@@ -266,12 +268,39 @@ def marketing_mark_reviewed(decision_id: int):
     return redirect(url_for("web_app.marketing_decision_detail", decision_id=decision_id))
 
 
-@web_app.route("/marketing/decision/<int:decision_id>/apagar", methods=["POST"])
-def marketing_delete_decision(decision_id: int):
-    """Apaga uma decisão (apenas marketing)."""
+@web_app.route("/marketing/decision/<int:decision_id>/arquivar", methods=["POST"])
+def marketing_archive_decision(decision_id: int):
+    """Arquiva uma decisão (apenas marketing)."""
     user = _current_user()
     if not user or user["role"] != "marketing":
         return redirect(url_for("web_app.login"))
 
-    delete_decision(decision_id)
+    archive_decision(decision_id)
     return redirect(url_for("web_app.marketing_dashboard"))
+
+
+@web_app.route("/marketing/decision/<int:decision_id>/desarquivar", methods=["POST"])
+def marketing_unarchive_decision(decision_id: int):
+    """Desarquiva uma decisão (apenas marketing)."""
+    user = _current_user()
+    if not user or user["role"] != "marketing":
+        return redirect(url_for("web_app.login"))
+
+    unarchive_decision(decision_id)
+    return redirect(url_for("web_app.marketing_archived"))
+
+
+@web_app.route("/marketing/arquivados")
+def marketing_archived():
+    """Lista de decisões arquivadas (apenas marketing)."""
+    user = _current_user()
+    if not user or user["role"] != "marketing":
+        return redirect(url_for("web_app.login"))
+
+    archived_decisions = get_archived_decisions()
+    return render_template(
+        "marketing_archived.html",
+        decisions=archived_decisions,
+        verticals=VERTICALS,
+        importance_levels=IMPORTANCE_LEVELS,
+    )
