@@ -54,20 +54,6 @@
   }
   .filter-group { display: flex; flex-direction: column; gap: 0.4rem; }
   .filter-group .filter-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
-  .semaforo-filters { display: flex; gap: 0.4rem; }
-  .semaforo-filter-btn {
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
-    border: 1.5px solid var(--field-border);
-    background: var(--input-bg);
-    color: var(--text);
-    font-family: inherit;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .semaforo-filter-btn.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); }
   .vertical-filters { display: flex; flex-wrap: wrap; gap: 0.4rem; max-width: 420px; }
   .vertical-filter-chip {
     display: inline-flex;
@@ -109,11 +95,6 @@
   table.decisions tr:hover td { background: var(--chip-bg); }
   table.decisions .vertical-cell { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
   table.decisions .vertical-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; background: var(--chip-bg); }
-  table.decisions .semaforo { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.7rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: capitalize; }
-  table.decisions .semaforo.verde { background: color-mix(in srgb, var(--verde) 18%, var(--card)); color: var(--verde); }
-  table.decisions .semaforo.amarelo { background: color-mix(in srgb, var(--amarelo) 18%, var(--card)); color: var(--amarelo); }
-  table.decisions .semaforo.vermelho { background: color-mix(in srgb, var(--vermelho) 18%, var(--card)); color: var(--vermelho); }
-  table.decisions .semaforo:empty::before { content: "—"; color: var(--muted); }
   table.decisions .importancia { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; background: var(--chip-bg); color: var(--text); }
   table.decisions .status-badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
   table.decisions .status-badge.reviewed { background: color-mix(in srgb, var(--verde) 18%, var(--card)); color: var(--verde); }
@@ -167,15 +148,6 @@
     <input type="text" id="search-input" class="search-input" placeholder="Buscar no texto da proposta…">
   </div>
   <div class="filter-group">
-    <span class="filter-label">Semáforo</span>
-    <div class="semaforo-filters" id="semaforo-filters">
-      <button type="button" class="semaforo-filter-btn active" data-semaforo="all">Todos</button>
-      <button type="button" class="semaforo-filter-btn" data-semaforo="verde">🟢 Verde</button>
-      <button type="button" class="semaforo-filter-btn" data-semaforo="amarelo">🟡 Amarelo</button>
-      <button type="button" class="semaforo-filter-btn" data-semaforo="vermelho">🔴 Vermelho</button>
-    </div>
-  </div>
-  <div class="filter-group">
     <span class="filter-label">Importância</span>
     <div class="semaforo-filters" id="importancia-filters">
       <button type="button" class="semaforo-filter-btn active" data-importancia="all">Todas</button>
@@ -213,7 +185,6 @@
         <th>Data</th>
         <th>Vertical(is)</th>
         <th>Proposta (resumo)</th>
-        <th>Semáforo</th>
         <th>Importância</th>
         <th>Status</th>
         <th>Público</th>
@@ -223,7 +194,7 @@
     </thead>
     <tbody>
       {% for d in decisions %}
-      <tr data-semaforo="{{ d.estado or '' }}" data-importancia="{{ d.importancia or '' }}" data-status="{{ 'reviewed' if d.reviewed else 'pending' }}" data-verticals="{{ d.vertical }}" data-search="{{ d.decision_text|lower }}">
+      <tr data-importancia="{{ d.importancia or '' }}" data-status="{{ 'reviewed' if d.reviewed else 'pending' }}" data-verticals="{{ d.vertical }}" data-search="{{ d.decision_text|lower }}">
         <td>{{ d.created_at[:10] }} {{ d.created_at[11:16] }}</td>
         <td class="vertical-cell">
           {% for v in d.vertical.split(',') if v %}
@@ -237,13 +208,6 @@
           {% endfor %}
         </td>
         <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ d.decision_text[:120] }}{% if d.decision_text|length > 120 %}…{% endif %}</td>
-        <td>
-          {% if d.estado %}
-            <span class="semaforo {{ d.estado }}">{{ d.estado }}</span>
-          {% else %}
-            <span class="semaforo">—</span>
-          {% endif %}
-        </td>
         <td>
           {% if d.importancia and importance_levels[d.importancia] %}
             <span class="importancia">{{ importance_levels[d.importancia].icone }} {{ importance_levels[d.importancia].label }}</span>
@@ -289,7 +253,6 @@
 
   var rows = Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
   var searchInput = document.getElementById('search-input');
-  var semaforoBtns = Array.prototype.slice.call(document.querySelectorAll('#semaforo-filters .semaforo-filter-btn'));
   var importanciaBtns = Array.prototype.slice.call(document.querySelectorAll('#importancia-filters .semaforo-filter-btn'));
   var statusBtns = Array.prototype.slice.call(document.querySelectorAll('#status-filters .semaforo-filter-btn'));
   var verticalChips = Array.prototype.slice.call(document.querySelectorAll('.vertical-filter-chip'));
@@ -297,24 +260,22 @@
   var noResults = document.getElementById('no-results');
   var clearBtn = document.getElementById('clear-filters');
 
-  var state = { semaforo: 'all', importancia: 'all', status: 'all', verticals: new Set(), search: '' };
+  var state = { importancia: 'all', status: 'all', verticals: new Set(), search: '' };
 
   function applyFilters() {
     var visible = 0;
     rows.forEach(function (row) {
-      var matchesSemaforo = state.semaforo === 'all' || row.dataset.semaforo === state.semaforo;
       var matchesImportancia = state.importancia === 'all' || row.dataset.importancia === state.importancia;
       var matchesStatus = state.status === 'all' || row.dataset.status === state.status;
       var rowVerticals = row.dataset.verticals.split(',').filter(Boolean);
       var matchesVertical = state.verticals.size === 0 || rowVerticals.some(function (v) { return state.verticals.has(v); });
       var matchesSearch = !state.search || row.dataset.search.indexOf(state.search) !== -1;
-      var show = matchesSemaforo && matchesImportancia && matchesStatus && matchesVertical && matchesSearch;
+      var show = matchesImportancia && matchesStatus && matchesVertical && matchesSearch;
       row.style.display = show ? '' : 'none';
       if (show) visible++;
     });
     resultsCount.textContent = 'Mostrando ' + visible + ' de ' + rows.length + ' pareceres';
     noResults.style.display = visible === 0 ? '' : 'none';
-    table.style.display = visible === 0 ? 'none' : '';
   }
 
   searchInput.addEventListener('input', function () {
@@ -322,34 +283,11 @@
     applyFilters();
   });
 
-  semaforoBtns.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      semaforoBtns.forEach(function (b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      state.semaforo = btn.dataset.semaforo;
-      applyFilters();
-    });
-  });
-
   importanciaBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
       importanciaBtns.forEach(function (b) { b.classList.remove('active'); });
       btn.classList.add('active');
       state.importancia = btn.dataset.importancia;
-      applyFilters();
-    });
-  });
-
-  verticalChips.forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      var v = chip.dataset.vertical;
-      if (state.verticals.has(v)) {
-        state.verticals.delete(v);
-        chip.classList.remove('active');
-      } else {
-        state.verticals.add(v);
-        chip.classList.add('active');
-      }
       applyFilters();
     });
   });
@@ -363,14 +301,22 @@
     });
   });
 
+  verticalChips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var v = chip.dataset.vertical;
+      if (state.verticals.has(v)) state.verticals.delete(v);
+      else state.verticals.add(v);
+      chip.classList.toggle('active', state.verticals.has(v));
+      applyFilters();
+    });
+  });
+
   clearBtn.addEventListener('click', function () {
-    state.semaforo = 'all';
     state.importancia = 'all';
     state.status = 'all';
     state.verticals.clear();
     state.search = '';
     searchInput.value = '';
-    semaforoBtns.forEach(function (b) { b.classList.toggle('active', b.dataset.semaforo === 'all'); });
     importanciaBtns.forEach(function (b) { b.classList.toggle('active', b.dataset.importancia === 'all'); });
     statusBtns.forEach(function (b) { b.classList.toggle('active', b.dataset.status === 'all'); });
     verticalChips.forEach(function (c) { c.classList.remove('active'); });

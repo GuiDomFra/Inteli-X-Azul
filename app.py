@@ -11,9 +11,10 @@ from web_app import web_app  # noqa: E402
 
 flask_app = Flask(__name__)
 flask_app.secret_key = SECRET_KEY
-flask_app.register_blueprint(web_app)
 
 csrf = CSRFProtect(flask_app)
+
+flask_app.register_blueprint(web_app)
 
 @flask_app.template_filter('from_json')
 def from_json_filter(value):
