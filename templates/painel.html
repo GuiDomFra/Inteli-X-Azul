@@ -171,6 +171,7 @@
     {{ vertical.nome }} · Tucano
   </div>
   <form method="post" action="{{ url_for('web_app.logout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit" class="logout">Sair</button>
   </form>
 </header>
@@ -195,6 +196,7 @@
     <h1 style="margin-top:0; font-size:1.15rem;">📝 Nova análise</h1>
     {% if error %}<div class="error">⚠️ {{ error }}</div>{% endif %}
     <form method="post" id="parecer-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label for="decision_text">Briefing ou proposta em estágio inicial</label>
       <textarea id="decision_text" name="decision_text" placeholder="Ex.: Vamos lançar uma campanha destacando..." required>{{ decision_text }}</textarea>
 

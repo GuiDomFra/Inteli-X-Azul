@@ -71,6 +71,7 @@
     {{ vertical.nome }} · Tucano
   </div>
   <form method="post" action="{{ url_for('web_app.logout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit" class="logout">Sair</button>
   </form>
 </header>

@@ -74,6 +74,7 @@
     {% endif %}
   </div>
   <form method="post" action="{{ url_for('web_app.logout') }}" style="margin-top: 1rem;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit" class="logout">Sair</button>
   </form>
 </div>
@@ -99,6 +100,7 @@
   <div class="decision-text">{{ decision.decision_text }}</div>
   {% if not decision.reviewed %}
   <form method="post" action="{{ url_for('web_app.marketing_mark_reviewed', decision_id=decision.id) }}" style="margin-top: 1.25rem;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit" class="primary">✔ Marcar como revisado</button>
     <span class="muted" style="margin-left: 0.6rem;">(sem precisar comentar — a vertical vai ver que o marketing já olhou)</span>
   </form>
@@ -147,6 +149,7 @@
   {% endif %}
 
   <form method="post" class="comment-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label for="comment">Adicionar comentário</label>
     <textarea id="comment" name="comment" placeholder="Escreva seu feedback, sugestão ou aprovação sobre este parecer..." required></textarea>
     <button type="submit" class="primary">Enviar comentário</button>

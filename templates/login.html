@@ -306,6 +306,7 @@
     {% if error %}<div class="error">⚠️ {{ error }}</div>{% endif %}
 
     <form method="post" id="login-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label for="username">Usuário</label>
       <input type="text" id="username" name="username" autocomplete="username" required>
 
