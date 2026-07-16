@@ -132,10 +132,13 @@
       <h1 style="margin: 0; font-size: 1.5rem; font-weight: 700;">📊 Dashboard de Marketing</h1>
       <p style="margin: 0.4rem 0 0; opacity: 0.9; font-size: 0.95rem;">O ponto de encontro entre as 6 verticais da Azul e o marketing — tudo o que elas enviam cai aqui, pra revisar e comentar.</p>
     </div>
-    <form method="post" action="{{ url_for('web_app.logout') }}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button type="submit" class="logout">Sair</button>
-    </form>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <a href="{{ url_for('web_app.marketing_archived') }}" class="btn-link" style="color: var(--muted); font-size: 0.8rem; text-decoration: none; opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">📦 Arquivados</a>
+      <form method="post" action="{{ url_for('web_app.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="logout">Sair</button>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -257,11 +260,11 @@
         </td>
 <td>{{ d.publico_alvo or '—' }}</td>
         <td>{{ d.canal or '—' }}</td>
-        <td class="action-cell">
-          <a href="{{ url_for('web_app.marketing_decision_detail', decision_id=d.id) }}" class="btn-link">Ver &amp; Comentar</a>
+<td class="action-cell">
+          <a href="{{ url_for('web_app.marketing_decision_detail', decision_id=d.id) }}" class="btn-link">Ver & Comentar</a>
           <form method="post" action="{{ url_for('web_app.marketing_archive_decision', decision_id=d.id) }}" style="display:inline;" onsubmit="return confirm('Arquivar este parecer? Ele será movido para o log de arquivados e não aparecerá mais no dashboard principal.');">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="btn-link" style="color: var(--amarelo); margin-left: 0.5rem;">📦 Arquivar</button>
+            <button type="submit" class="btn-link" style="color: var(--muted); font-size: 0.8rem; opacity: 0.4; transition: opacity 0.2s, color 0.2s; padding: 0; margin-left: 0.5rem;" onmouseover="this.style.opacity='1'; this.style.color='var(--amarelo)'" onmouseout="this.style.opacity='0.4'; this.style.color='var(--muted)'">📦</button>
           </form>
         </td>
       </tr>
