@@ -261,63 +261,133 @@ def compute_report_word_count(parecer: dict) -> int:
     return len(f"{riscos_text} {sugestoes_text}".split())
 
 
+def _analyze_locally(decision_text: str, guidelines: dict, publico_alvo: str | None, canal: str | None) -> dict:
+    """Análise local de risco de marca (sem API externa) — implementa as regras do brandbook."""
+    text_lower = decision_text.lower()
+    riscos = []
+    
+    # Mapeamento de palavras-chave para categorias de risco
+    risk_patterns = {
+        "seguranca": {
+            "keywords": ["mais seguro", "nunca teve incidente", "zero acidente", "segurança absoluta", "voo mais seguro"],
+            "diretriz": "seguranca_operacional",
+            "severidade": "alto",
+        },
+        "promessa_absoluta": {
+            "keywords": ["sempre no horário", "nunca atrasa", "pontualidade 100%", "garantia de entrega", "prazo garantido", "sem atraso", "100% pontual"],
+            "diretriz": "pontualidade_absoluta",
+            "severidade": "alto",
+        },
+        "tom_low_cost": {
+            "keywords": ["mais barato", "mais barata", "preço baixo", "menor preço", "imperdível", "promoção imperdível", "economize", "low cost", "low-cost", "barato", "barata", "desconto agressivo", "preço imbatível", "mais em conta"],
+            "diretriz": "tom_low_cost",
+            "severidade": "alto",
+        },
+        "concorrente": {
+            "keywords": ["gol", "latam", "azul é melhor que", "superior à gol", "vence a latam", "concorrente"],
+            "diretriz": "ataque_concorrente",
+            "severidade": "alto",
+        },
+        "exclusao": {
+            "keywords": ["estereotipo", "estereótipo", "preconceito", "exclui", "não para"],
+            "diretriz": "exclusao_estereotipo",
+            "severidade": "alto",
+        },
+        "greenwashing": {
+            "keywords": ["carbono zero", "neutro de carbono", "100% sustentável", "zero emissão", "verde total", "eco-friendly garantido"],
+            "diretriz": "greenwashing",
+            "severidade": "alto",
+        },
+        "tom_voz": {
+            "keywords": ["protocolar", "burocrático", "conforme regulamento", "nos termos do contrato", "formalizado", "conforme cláusula"],
+            "diretriz": "tom_de_voz",
+            "severidade": "medio",
+        },
+        "posicionamento": {
+            "keywords": ["líder de mercado", "maior empresa", "número 1", "dominância", "monopólio"],
+            "diretriz": "posicionamento",
+            "severidade": "medio",
+        },
+        "acessibilidade": {
+            "keywords": ["slot", "load factor", "lead time", "yield", "revenue management", "pax", "ask", "rpK"],
+            "diretriz": "tom_de_voz",
+            "severidade": "medio",
+        },
+    }
+    
+    # Verifica cada padrão
+    for categoria, config in risk_patterns.items():
+        for kw in config["keywords"]:
+            if kw in text_lower:
+                riscos.append({
+                    "diretriz": config["diretriz"],
+                    "risco": f"Identificado termo sensível: '{kw}'",
+                    "categoria": categoria,
+                    "severidade": config["severidade"],
+                })
+                break  # uma ocorrência por categoria basta
+    
+    # Determina estado geral
+    if any(r["severidade"] == "alto" for r in riscos):
+        estado = "vermelho"
+    elif any(r["severidade"] == "medio" for r in riscos):
+        estado = "amarelo"
+    else:
+        estado = "verde"
+    
+    # Gera sugestões baseadas nos riscos encontrados
+    sugestoes = []
+    categorias_encontradas = {r["categoria"] for r in riscos}
+    
+    if "tom_low_cost" in categorias_encontradas:
+        sugestoes.append("Reforce a experiência e o cuidado humano, não o preço — a Azul compete pela melhor experiência, não pelo menor custo.")
+    if "promessa_absoluta" in categorias_encontradas:
+        sugestoes.append("Substitua garantias absolutas por compromissos: 'pontualidade como prioridade' em vez de 'sempre no horário'.")
+    if "concorrente" in categorias_encontradas:
+        sugestoes.append("Remova menções nominais a concorrentes; diferencie afirmando o que a Azul oferece (malha, cuidado, experiência).")
+    if "seguranca" in categorias_encontradas:
+        sugestoes.append("Não use segurança operacional como argumento de marketing — é requisito básico, não diferencial.")
+    if "greenwashing" in categorias_encontradas:
+        sugestoes.append("Alegações ambientais precisam de lastro auditável/certificado; comunique como compromisso com programas específicos.")
+    if "tom_voz" in categorias_encontradas:
+        sugestoes.append("Adote tom mais caloroso e acessível: fale como gente, evite jargão corporativo.")
+    if "acessibilidade" in categorias_encontradas:
+        sugestoes.append("Explique termos técnicos ou substitua por linguagem simples para o cliente final.")
+    if "posicionamento" in categorias_encontradas:
+        sugestoes.append("Posicione a Azul pela maior malha doméstica e experiência humana, não por dominância de mercado.")
+    if "exclusao" in categorias_encontradas:
+        sugestoes.append("Revise a linguagem para garantir inclusão e evitar estereótipos regionais ou sociais.")
+    
+    # Sugestões genéricas se poucos riscos
+    if len(sugestoes) < 2 and estado != "verde":
+        sugestoes.append("Alinhe o tom ao jeito Azul: caloroso, brasileiro, acessível.")
+    if estado == "verde":
+        sugestoes = ["Manter tom caloroso e brasileiro", "Garantir acessibilidade na comunicação", "Respeitar identidade visual Azul"]
+    
+    # Limita a 3 sugestões
+    sugestoes = sugestoes[:3]
+    
+    # Limita riscos a 3
+    riscos = riscos[:3]
+    
+    return {
+        "estado": estado,
+        "riscos": riscos,
+        "sugestoes": sugestoes,
+        "_word_count": compute_report_word_count({"riscos": riscos, "sugestoes": sugestoes}),
+        "_latency_ms": 0,
+        "_model_id": "local-analyzer-v1",
+        "_raw": "local",
+    }
+
+
 def get_brand_parecer(
     decision_text: str,
     brand_guidelines_text: str,
     publico_alvo: str | None = None,
     canal: str | None = None,
 ) -> dict:
-    system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
-        brand_guidelines_text=brand_guidelines_text, max_words=MAX_REPORT_WORDS
-    )
-
-    user_content = f"Decisão a avaliar:\n\n{decision_text}"
-    if publico_alvo or canal:
-        user_content += "\n\nContexto adicional fornecido:"
-        if publico_alvo:
-            user_content += f"\n- Público-alvo: {publico_alvo}"
-        if canal:
-            user_content += f"\n- Canal: {canal}"
-
-    start = time.monotonic()
-    try:
-        response = client.messages.create(
-            model=CLAUDE_MODEL,
-            max_tokens=4096,
-            thinking={"type": "adaptive"},
-            system=system_prompt,
-            output_config={"format": {"type": "json_schema", "schema": BRAND_PARECER_SCHEMA}},
-            messages=[{"role": "user", "content": user_content}],
-        )
-    except anthropic.RateLimitError as e:
-        raise BrandAdvisorError("rate_limited", str(e)) from e
-    except anthropic.APIConnectionError as e:
-        raise BrandAdvisorError("connection_error", str(e)) from e
-    except anthropic.APIStatusError as e:
-        raise BrandAdvisorError(f"api_error_{e.status_code}", e.message) from e
-
-    latency_ms = int((time.monotonic() - start) * 1000)
-
-    if response.stop_reason == "refusal":
-        raise BrandAdvisorError("refusal", "O modelo recusou a solicitação.")
-    if response.stop_reason == "max_tokens":
-        raise BrandAdvisorError("truncated", "Resposta truncada por max_tokens.")
-
-    text = next(b.text for b in response.content if b.type == "text")
-    parecer = json.loads(text)
-
-    for key in ("riscos", "sugestoes"):
-        items = parecer.get(key, [])
-        if len(items) > 3:
-            logger.warning("Modelo retornou %d itens em %r; truncando para 3.", len(items), key)
-            parecer[key] = items[:3]
-
-    word_count = compute_report_word_count(parecer)
-    if word_count > MAX_REPORT_WORDS:
-        logger.warning("Relatório excedeu %d palavras (%d).", MAX_REPORT_WORDS, word_count)
-
-    parecer["_word_count"] = word_count
-    parecer["_latency_ms"] = latency_ms
-    parecer["_model_id"] = response.model
-    parecer["_raw"] = text
-    return parecer
+    """Analisa a proposta contra as diretrizes da marca Azul (versão local)."""
+    import yaml
+    guidelines = yaml.safe_load(brand_guidelines_text)
+    return _analyze_locally(decision_text, guidelines, publico_alvo, canal)

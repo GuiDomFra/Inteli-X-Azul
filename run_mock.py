@@ -8,7 +8,7 @@ mock_client = MagicMock()
 mock_response = MagicMock()
 mock_response.stop_reason = 'end_turn'
 mock_response.model = 'claude-opus-4-8-mock'
-mock_response.content = [MagicMock(type='text', text='{"estado": "verde", "riscos": [], "sugestoes": ["Manter tom caloroso e brasileiro", "Garantir acessibilidade nas cores", "Respeitar identidade visual Azul"]}')]
+mock_response.content = [MagicMock(type='text', text='{"estado": "vermelho", "riscos": [{"diretriz": "tom_low_cost", "risco": "Campanha foca em preço baixo como argumento central", "categoria": "tom_low_cost", "severidade": "alto"}, {"diretriz": "pontualidade_absoluta", "risco": "Promete voos sempre no horário sem ressalvas", "categoria": "promessa_absoluta", "severidade": "alto"}, {"diretriz": "tom_de_voz", "risco": "Linguagem corporativa fria, sem calor humano", "categoria": "tom_voz", "severidade": "medio"}], "sugestoes": ["Reforçar experiência e cuidado, não preço", "Trocar \"sempre no horário\" por \"compromisso com pontualidade\"", "Usar tom mais próximo e acolhedor"]}')]
 mock_client.messages.create.return_value = mock_response
 
 import brand_advisor
