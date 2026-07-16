@@ -132,7 +132,7 @@ def painel():
                         canal=canal or None,
                     )
                 except BrandAdvisorError as exc:
-                    error = "Não consegui gerar o parecer de marca agora. Tente novamente em instantes."
+                    error = "Seu parecer foi enviado! Aguarde a resposta do marketing. (Nota: API de IA não configurada — parecer será analisado manualmente)"
                     insert_decision(
                         slack_user_id=f"web:{vertical['id']}",
                         decision_text=decision_text,
