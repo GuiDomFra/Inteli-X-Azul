@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS decisions (
     resumo              TEXT,
     perguntas_json      TEXT,
     recomendacao        TEXT,
-    reviewed            INTEGER NOT NULL DEFAULT 0
+    reviewed            INTEGER NOT NULL DEFAULT 0,
+    archived            INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_decisions_channel_created
@@ -62,6 +63,7 @@ NEW_COLUMNS = {
     "word_count": "INTEGER",
     "word_count_exceeded": "INTEGER",
     "reviewed": "INTEGER NOT NULL DEFAULT 0",
+    "archived": "INTEGER NOT NULL DEFAULT 0",
 }
 
 
@@ -89,25 +91,64 @@ def insert_decision(**fields) -> int:
         return cursor.lastrowid
 
 
-def get_all_decisions() -> list[sqlite3.Row]:
-    """Retorna todas as decisões ordenadas por data (mais recentes primeiro)."""
+def get_all_decisions(include_archived: bool = False) -> list[sqlite3.Row]:
+    """Retorna todas as decisões ordenadas por data (mais recentes primeiro).
+    Por padrão, não inclui decisões arquivadas."""
     with get_connection() as conn:
         conn.row_factory = sqlite3.Row
+        if include_archived:
+            return list(conn.execute("""
+                SELECT * FROM decisions
+                ORDER BY created_at DESC
+            """))
         return list(conn.execute("""
             SELECT * FROM decisions
+            WHERE archived = 0
             ORDER BY created_at DESC
         """))
 
 
-def get_decisions_by_vertical(vertical_id: str) -> list[sqlite3.Row]:
-    """Retorna decisões de uma vertical específica."""
+def get_decisions_by_vertical(vertical_id: str, include_archived: bool = False) -> list[sqlite3.Row]:
+    """Retorna decisões de uma vertical específica.
+    Por padrão, não inclui decisões arquivadas."""
+    with get_connection() as conn:
+        conn.row_factory = sqlite3.Row
+        if include_archived:
+            return list(conn.execute("""
+                SELECT * FROM decisions
+                WHERE vertical LIKE ?
+                ORDER BY created_at DESC
+            """, (f"%{vertical_id}%",)))
+        return list(conn.execute("""
+            SELECT * FROM decisions
+            WHERE vertical LIKE ? AND archived = 0
+            ORDER BY created_at DESC
+        """, (f"%{vertical_id}%",)))
+
+
+def get_archived_decisions() -> list[sqlite3.Row]:
+    """Retorna todas as decisões arquivadas ordenadas por data (mais recentes primeiro)."""
     with get_connection() as conn:
         conn.row_factory = sqlite3.Row
         return list(conn.execute("""
             SELECT * FROM decisions
-            WHERE vertical LIKE ?
+            WHERE archived = 1
             ORDER BY created_at DESC
-        """, (f"%{vertical_id}%",)))
+        """))
+
+
+def archive_decision(decision_id: int) -> bool:
+    """Arquiva uma decisão (soft delete). Retorna True se arquivou, False se não encontrou."""
+    with get_connection() as conn:
+        cursor = conn.execute("UPDATE decisions SET archived = 1 WHERE id = ?", (decision_id,))
+        return cursor.rowcount > 0
+
+
+def unarchive_decision(decision_id: int) -> bool:
+    """Desarquiva uma decisão. Retorna True se desarquivou, False se não encontrou."""
+    with get_connection() as conn:
+        cursor = conn.execute("UPDATE decisions SET archived = 0 WHERE id = ?", (decision_id,))
+        return cursor.rowcount > 0
 
 
 def insert_comment(decision_id: int, author_role: str, author_name: str, content: str) -> int:
@@ -143,12 +184,3 @@ def get_comments(decision_id: int) -> list[sqlite3.Row]:
             WHERE decision_id = ?
             ORDER BY created_at ASC
         """, (decision_id,)))
-
-
-def delete_decision(decision_id: int) -> bool:
-    """Deleta uma decisão e seus comentários associados.
-    Retorna True se deletou, False se não encontrou."""
-    with get_connection() as conn:
-        conn.execute("DELETE FROM comments WHERE decision_id = ?", (decision_id,))
-        cursor = conn.execute("DELETE FROM decisions WHERE id = ?", (decision_id,))
-        return cursor.rowcount > 0

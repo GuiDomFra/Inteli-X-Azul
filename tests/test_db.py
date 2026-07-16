@@ -51,3 +51,21 @@ def test_get_decisions_by_vertical_matches_multi_vertical_tag(tmp_path, monkeypa
     db.insert_decision(slack_user_id="web:tudoazul", decision_text="conjunta", vertical="tudoazul,viagens")
     rows = db.get_decisions_by_vertical("viagens")
     assert len(rows) == 1
+
+
+def test_insert_decision_accepts_full_parecer_fields(tmp_path, monkeypatch):
+    """Guarda contra regressão: model_id e estado já foram removidos do
+    schema por engano mais de uma vez, quebrando insert_decision no fluxo
+    real (web_app.py/slack_app.py sempre passam esses dois campos)."""
+    _fresh_db(tmp_path, monkeypatch)
+    decision_id = db.insert_decision(
+        slack_user_id="web:cargo",
+        decision_text="teste",
+        vertical="cargo",
+        model_id="claude-opus-4-8",
+        estado="vermelho",
+    )
+    row = db.get_all_decisions()[0]
+    assert row["id"] == decision_id
+    assert row["model_id"] == "claude-opus-4-8"
+    assert row["estado"] == "vermelho"
