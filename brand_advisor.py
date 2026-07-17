@@ -7,8 +7,13 @@ import yaml
 
 from config import ANTHROPIC_API_KEY, BRAND_GUIDELINES_PATH, CLAUDE_MODEL
 
-client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 logger = logging.getLogger(__name__)
+
+USE_API = bool(ANTHROPIC_API_KEY and ANTHROPIC_API_KEY != "sua-chave-real-aqui")
+if USE_API:
+    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+else:
+    client = None
 
 MAX_REPORT_WORDS = 300
 NO_GUIDELINE_SENTINEL = "não há diretriz sobre isso"
@@ -381,13 +386,64 @@ def _analyze_locally(decision_text: str, guidelines: dict, publico_alvo: str | N
     }
 
 
+def _analyze_with_api(
+    decision_text: str,
+    brand_guidelines_text: str,
+    publico_alvo: str | None,
+    canal: str | None,
+) -> dict:
+    """Analisa a proposta usando a API da Anthropic."""
+    start = time.perf_counter()
+    system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
+        brand_guidelines_text=brand_guidelines_text,
+        max_words=MAX_REPORT_WORDS,
+    )
+    user_parts = [f"Proposta:\n{decision_text}"]
+    if publico_alvo:
+        user_parts.append(f"Público-alvo: {publico_alvo}")
+    if canal:
+        user_parts.append(f"Canal: {canal}")
+    user_content = "\n\n".join(user_parts)
+
+    resp = client.messages.create(
+        model=CLAUDE_MODEL,
+        max_tokens=1024,
+        temperature=0,
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_content}],
+    )
+
+    latency_ms = int((time.perf_counter() - start) * 1000)
+
+    if resp.stop_reason == "refusal":
+        raise BrandAdvisorError("refusal", "O modelo recusou a solicitação.")
+
+    raw_text = "".join(block.text for block in resp.content if block.type == "text")
+
+    try:
+        parecer = json.loads(raw_text)
+    except json.JSONDecodeError as e:
+        raise BrandAdvisorError("parse_error", f"Resposta do modelo não é JSON válido: {e}")
+
+    parecer["_latency_ms"] = latency_ms
+    parecer["_model_id"] = resp.model
+    parecer["_raw"] = raw_text
+    parecer["_word_count"] = compute_report_word_count(parecer)
+
+    return parecer
+
+
 def get_brand_parecer(
     decision_text: str,
     brand_guidelines_text: str,
     publico_alvo: str | None = None,
     canal: str | None = None,
 ) -> dict:
-    """Analisa a proposta contra as diretrizes da marca Azul (versão local)."""
+    """Analisa a proposta contra as diretrizes da marca Azul."""
     import yaml
     guidelines = yaml.safe_load(brand_guidelines_text)
-    return _analyze_locally(decision_text, guidelines, publico_alvo, canal)
+    
+    if USE_API and client:
+        return _analyze_with_api(decision_text, brand_guidelines_text, publico_alvo, canal)
+    else:
+        return _analyze_locally(decision_text, guidelines, publico_alvo, canal)

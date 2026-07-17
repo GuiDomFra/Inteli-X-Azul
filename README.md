@@ -173,3 +173,8 @@ necessário mexer em código: o agente recarrega o arquivo a cada chamada.
 > **Nota:** a cor `AZUL_BLUE` em `slack_formatting.py` também é um valor
 > ainda não confirmado com o time de marca — ajustar para o hex exato do
 > guia de identidade visual da Azul assim que disponível.
+
+
+# Integrantes
+# José  |  Miguel  |  Rafael  |  João  |  João Pedro
+# Catarina  |  Guilherme  |  Isabel |  Maria  |  Pedro
